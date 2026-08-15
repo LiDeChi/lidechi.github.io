@@ -47,7 +47,7 @@ quarto preview
 这个入口会依次完成：
 
 1. 给新建且尚未编号的 Markdown 笔记追加下一个序号；
-2. 检查标题、`article-id`、日期、草稿状态和公开文章顺序；
+2. 检查标题、`article-id`、日期、草稿状态和文章目录约束；
 3. 完整构建 Quarto 站点；
 4. 只提交 `posts/` 与 `assets/articles/` 中的文章改动并推送 `main`。
 

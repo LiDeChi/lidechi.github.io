@@ -99,29 +99,37 @@ function extractLanguageBody(body, lang) {
 
 function cleanInline(text) {
   const mathTokens = [];
-  const protectedText = text.replace(
-    /\$\$[\s\S]+?\$\$|\$(?:\\.|[^$\n])+\$/g,
-    (formula) => {
+  const codeTokens = [];
+  const protectedText = text
+    .replace(/`([^`\n]+)`/g, (_, code) => {
+      const token = `WORDMCODETOKEN${codeTokens.length}END`;
+      codeTokens.push(code);
+      return token;
+    })
+    .replace(/\$\$[\s\S]+?\$\$|\$(?:\\.|[^$\n])+\$/g, (formula) => {
       const token = `WORDMMATHTOKEN${mathTokens.length}END`;
       mathTokens.push(formula);
       return token;
-    },
-  );
+    });
 
   const cleaned = protectedText
     .replace(/!\[([^\]]*)\]\([^)]+\)/g, "$1")
     .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
     .replace(/(\*\*|__)(.*?)\1/g, "$2")
     .replace(/(\*|_)(.*?)\1/g, "$2")
-    .replace(/`([^`]+)`/g, "$1")
     .replace(/<[^>]+>/g, "")
     .replace(/\s+/g, " ")
     .trim();
 
-  return cleaned.replace(
-    /WORDMMATHTOKEN(\d+)END/g,
-    (_, index) => mathTokens[Number(index)] ?? "",
-  );
+  return cleaned
+    .replace(
+      /WORDMMATHTOKEN(\d+)END/g,
+      (_, index) => mathTokens[Number(index)] ?? "",
+    )
+    .replace(
+      /WORDMCODETOKEN(\d+)END/g,
+      (_, index) => codeTokens[Number(index)] ?? "",
+    );
 }
 
 function readImageDimensions(sourcePath, imageHref) {
@@ -226,6 +234,19 @@ function parseBlocks(markdown, articleUrl, sourcePath) {
       continue;
     }
 
+    if (line.startsWith("```")) {
+      const codeLines = [];
+      index += 1;
+      while (index < lines.length && !lines[index].trim().startsWith("```")) {
+        codeLines.push(lines[index]);
+        index += 1;
+      }
+      if (index < lines.length) index += 1;
+      const code = codeLines.join("\n").trimEnd();
+      if (code) blocks.push({ type: "paragraph", value: code });
+      continue;
+    }
+
     const image = line.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
     if (image) {
       let caption = "";
@@ -249,6 +270,19 @@ function parseBlocks(markdown, articleUrl, sourcePath) {
         caption,
         ...(dimensions || {}),
       });
+      continue;
+    }
+
+    if (line === "$$") {
+      const formulaLines = [line];
+      index += 1;
+      while (index < lines.length) {
+        const formulaLine = lines[index].trim();
+        formulaLines.push(formulaLine);
+        index += 1;
+        if (formulaLine === "$$") break;
+      }
+      pushParagraph(formulaLines);
       continue;
     }
 
