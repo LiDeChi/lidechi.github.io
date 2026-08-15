@@ -397,16 +397,29 @@ body.blog-is-immersive #quarto-content > .blog-surface-shell, body.blog-is-immer
 
 // ---- Immersive mode -----------------------------------------------------
 
-.blog-immersive { width: 100%; padding: 2.4rem 0 4rem; }
-
-.blog-immersive-layout {
-  display: flex;
+.blog-immersive {
   width: 100%;
-  align-items: flex-start;
-  gap: clamp(2.25rem, 5vw, 6.5rem);
+  padding: 2.4rem 0 4rem;
+  scroll-margin-top: 6.5rem;
 }
 
-.blog-immersive-article { flex: 1 1 auto; min-width: 0; max-width: 48rem; margin: 0; padding: 0 0 4rem; }
+.blog-immersive-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 48rem);
+  justify-content: center;
+  width: 100%;
+  align-items: flex-start;
+  row-gap: 2.5rem;
+}
+
+.blog-immersive-article {
+  grid-column: 1;
+  min-width: 0;
+  width: 100%;
+  max-width: 48rem;
+  margin: 0;
+  padding: 0 0 4rem;
+}
 
 .blog-immersive-title {
   max-width: 16ch;
@@ -471,14 +484,16 @@ body.blog-is-immersive #quarto-content > .blog-surface-shell, body.blog-is-immer
 .blog-immersive-loading, .blog-immersive-error { color: var(--ink-faint); font-family: var(--ui-font); font-size: 0.8rem; }
 
 .blog-toc {
-  position: sticky;
-  top: 6.5rem;
-  flex: 0 0 12rem;
-  width: 12rem;
-  max-height: calc(100dvh - 8.2rem);
-  padding: 0.35rem 0 0.4rem 1.3rem;
-  overflow: auto;
-  border-left: 1px solid var(--line);
+  position: static;
+  grid-column: 1;
+  width: 100%;
+  max-width: 48rem;
+  max-height: none;
+  margin: 0;
+  padding: 1.25rem 0 0;
+  overflow: visible;
+  border-top: 1px solid var(--line);
+  border-left: 0;
   color: var(--ink-faint);
   font-family: var(--ui-font);
   font-size: 0.67rem;
@@ -507,6 +522,31 @@ body.blog-is-immersive #quarto-content > .blog-surface-shell, body.blog-is-immer
 .blog-toc-h3 { padding-left: 0.65rem; }
 .blog-toc-h4 { padding-left: 1.25rem; }
 .blog-toc-empty { opacity: 0.55; }
+
+// On a wide screen, reserve a matching left rail so the prose itself stays centered.
+@media (min-width: 1320px) {
+  .blog-immersive-layout {
+    grid-template-columns: 12rem minmax(0, 48rem) 12rem;
+    column-gap: 1.5rem;
+    row-gap: 0;
+  }
+
+  .blog-immersive-article {
+    grid-column: 2;
+  }
+
+  .blog-toc {
+    position: sticky;
+    top: 6.5rem;
+    grid-column: 3;
+    width: 12rem;
+    max-height: calc(100dvh - 8.2rem);
+    padding: 0.35rem 0 0.4rem 1.3rem;
+    overflow: auto;
+    border-top: 0;
+    border-left: 1px solid var(--line);
+  }
+}
 
 // ---- Reading dock -------------------------------------------------------
 
@@ -668,8 +708,14 @@ body.blog-is-immersive .page-footer .nav-footer { width: var(--blog-read-col); m
   .blog-preview-meta { margin-top: 0.7rem; font-size: 0.6rem; }
   .blog-preview-text { margin-top: 0.8rem; font-size: 0.94rem; line-height: 1.72; }
   .blog-preview-media, .blog-preview-media img { max-height: 180px; }
-  .blog-immersive { padding-top: 1.7rem; }
-  .blog-immersive-layout { flex-direction: column; gap: 1.7rem; }
+  .blog-immersive {
+    padding-top: 1.7rem;
+    scroll-margin-top: 5rem;
+  }
+  .blog-immersive-layout {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 1.7rem;
+  }
   .blog-immersive-title { font-size: clamp(2rem, 10vw, 2.8rem) !important; }
   .blog-immersive-meta { margin: 0.9rem 0 2.2rem; }
   .blog-immersive-body, main.content { font-size: 1rem; line-height: 1.82; }
@@ -677,7 +723,7 @@ body.blog-is-immersive .page-footer .nav-footer { width: var(--blog-read-col); m
 
   .blog-toc {
     position: static;
-    flex: none;
+    grid-column: 1;
     width: 100%;
     max-height: none;
     padding: 1rem 0 0;

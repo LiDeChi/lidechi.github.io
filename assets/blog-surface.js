@@ -190,10 +190,10 @@
           <div class="blog-immersive-meta"></div>
           <div class="blog-immersive-body"></div>
         </article>
-        <aside class="blog-toc" aria-label="大纲">
+        <div class="blog-toc" aria-label="大纲" role="navigation">
           <div class="blog-toc-label">大纲</div>
           <nav class="blog-toc-nav"></nav>
-        </aside>
+        </div>
       </div>
     </div>
     <div class="blog-reading-dock" aria-label="博客阅读控制" hidden>
@@ -231,13 +231,6 @@
   const dockPrevText = shell.querySelector('[data-dock="prev-text"]');
   const dockNextText = shell.querySelector('[data-dock="next-text"]');
 
-  function categoryLine(item) {
-    return item.categories
-      .slice(0, 2)
-      .map((b) => escapeHtml(b))
-      .join(" · ");
-  }
-
   function renderPreviewHtml(item) {
     const source = item.fullText || item.description || "";
     const parts = previewParts(source);
@@ -246,11 +239,9 @@
     const textHtml = parts.html
       ? `<p class="blog-preview-text">${parts.html}</p>`
       : "";
-    const meta = categoryLine(item);
     return `
       <button type="button" class="blog-preview-hit" aria-label="展开：${escapeHtml(item.title)}">
         <h2 class="blog-preview-title">${escapeHtml(item.title)}</h2>
-        ${meta ? `<div class="blog-preview-meta">${meta}</div>` : ""}
         ${
           item.image
             ? `<div class="blog-preview-media"><img src="${escapeHtml(item.image.src)}" alt="${escapeHtml(item.image.alt)}" loading="lazy" decoding="async" /></div>`
@@ -473,7 +464,7 @@
     const payload = {
       title:
         cleanText(doc.querySelector("h1.title")?.textContent) || item.title,
-      meta: [item.date, ...item.categories].filter(Boolean).join(" · "),
+      meta: item.date,
       bodyHtml,
     };
     state.cache.set(item.href, payload);
@@ -600,9 +591,7 @@
     setMode("immersive");
     immersiveBody.innerHTML = `<p class="blog-immersive-loading">…</p>`;
     immersiveTitle.textContent = item.title;
-    immersiveMeta.textContent = [item.date, ...item.categories]
-      .filter(Boolean)
-      .join(" · ");
+    immersiveMeta.textContent = item.date;
     tocNav.innerHTML = "";
 
     try {
