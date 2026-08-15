@@ -82,7 +82,7 @@ pre code { padding: 0; background: transparent; }
 
 .navbar {
   --bs-gutter-x: 0;
-  min-height: 4.7rem;
+  min-height: 4.15rem;
   padding: 0;
   border-bottom: 1px solid var(--line);
   background: rgba(247, 246, 242, 0.94);
@@ -95,17 +95,17 @@ pre code { padding: 0; background: transparent; }
   display: flex !important;
   width: var(--blog-browse-col) !important;
   max-width: var(--blog-browse-col) !important;
-  min-height: 4.7rem;
+  min-height: 4.15rem;
   margin-inline: auto !important;
   padding-inline: 0 !important;
   align-items: center;
-  gap: 1.6rem;
+  gap: 1rem;
 }
 
 .navbar .navbar-brand {
   display: inline-flex;
   align-items: center;
-  min-height: 4.7rem;
+  min-height: 4.15rem;
   margin: 0 !important;
   padding: 0 !important;
   color: var(--ink);
@@ -179,7 +179,7 @@ pre code { padding: 0; background: transparent; }
 
 // ---- Quarto page frame --------------------------------------------------
 
-#quarto-content { min-height: calc(100vh - 4.7rem); }
+#quarto-content { min-height: calc(100vh - 4.15rem); }
 body.nav-fixed #quarto-content, #quarto-content.page-columns { display: block !important; grid-template-columns: none !important; }
 #quarto-margin-sidebar, #quarto-sidebar, nav.sidebar, .sidebar.margin-sidebar { display: none !important; }
 #quarto-document-content, main.content { grid-column: unset !important; max-width: none !important; }
@@ -209,7 +209,7 @@ body.blog-is-immersive #quarto-content > .blog-surface-shell, body.blog-is-immer
 
 // ---- Browse mode: a calm editorial archive, not a card grid ------------
 
-.blog-surface-shell { display: grid; margin: 0 auto 8rem; color: var(--ink); }
+.blog-surface-shell { display: grid; margin: 0 auto 5.5rem; color: var(--ink); }
 .blog-browse { width: 100%; }
 
 .blog-browse-layout {
@@ -335,7 +335,7 @@ body.blog-is-immersive #quarto-content > .blog-surface-shell, body.blog-is-immer
   text-wrap: balance;
 }
 
-.blog-preview-meta, .blog-immersive-meta, .listing-description, .listing-date, .quarto-category {
+.blog-preview-meta, .listing-description, .listing-date, .quarto-category {
   color: var(--ink-faint);
   font-family: var(--ui-font);
   font-size: 0.69rem;
@@ -399,8 +399,8 @@ body.blog-is-immersive #quarto-content > .blog-surface-shell, body.blog-is-immer
 
 .blog-immersive {
   width: 100%;
-  padding: 2.4rem 0 4rem;
-  scroll-margin-top: 6.5rem;
+  padding: 1.5rem 0 3rem;
+  scroll-margin-top: 5.7rem;
 }
 
 .blog-immersive-layout {
@@ -409,7 +409,7 @@ body.blog-is-immersive #quarto-content > .blog-surface-shell, body.blog-is-immer
   justify-content: center;
   width: 100%;
   align-items: flex-start;
-  row-gap: 2.5rem;
+  row-gap: 1.7rem;
 }
 
 .blog-immersive-article {
@@ -418,7 +418,7 @@ body.blog-is-immersive #quarto-content > .blog-surface-shell, body.blog-is-immer
   width: 100%;
   max-width: 48rem;
   margin: 0;
-  padding: 0 0 4rem;
+  padding: 0 0 3rem;
 }
 
 .blog-immersive-title {
@@ -426,27 +426,25 @@ body.blog-is-immersive #quarto-content > .blog-surface-shell, body.blog-is-immer
   margin: 0;
   color: var(--ink);
   font-family: var(--display-font);
-  font-size: clamp(2.2rem, 4.2vw, 4.05rem) !important;
+  font-size: clamp(2.05rem, 3.7vw, 3.55rem) !important;
   font-weight: 800;
   letter-spacing: -0.03em;
   line-height: 1.12;
   text-wrap: balance;
 }
 
-.blog-immersive-meta { margin: 1.15rem 0 3.1rem; }
-
 .blog-immersive-body {
   color: var(--ink);
   font-family: var(--body-font);
   font-size: 1.08rem;
-  line-height: 1.85;
+  line-height: 1.78;
 }
 
-.blog-immersive-body p, .blog-immersive-body li { max-width: 40rem; margin-bottom: 1.25rem; }
+.blog-immersive-body p, .blog-immersive-body li { max-width: 40rem; margin-bottom: 1rem; }
 
 .blog-immersive-body h2, .blog-immersive-body h3, .blog-immersive-body h4 {
   max-width: 24ch;
-  margin: 2.3em 0 0.7em;
+  margin: 2em 0 0.6em;
   color: var(--ink);
   font-family: var(--display-font);
   font-weight: 800;
@@ -521,7 +519,6 @@ body.blog-is-immersive #quarto-content > .blog-surface-shell, body.blog-is-immer
 .blog-toc-link:hover, .blog-toc-link.is-active { color: var(--accent); }
 .blog-toc-h3 { padding-left: 0.65rem; }
 .blog-toc-h4 { padding-left: 1.25rem; }
-.blog-toc-empty { opacity: 0.55; }
 
 // On a wide screen, reserve a matching left rail so the prose itself stays centered.
 @media (min-width: 1320px) {
@@ -537,7 +534,7 @@ body.blog-is-immersive #quarto-content > .blog-surface-shell, body.blog-is-immer
 
   .blog-toc {
     position: sticky;
-    top: 6.5rem;
+    top: 5.45rem;
     grid-column: 3;
     width: 12rem;
     max-height: calc(100dvh - 8.2rem);
@@ -556,9 +553,9 @@ body.blog-is-immersive #quarto-content > .blog-surface-shell, body.blog-is-immer
   left: 50%;
   z-index: 40;
   display: flex;
-  width: min(39rem, calc(100vw - 2rem));
+  width: min(39rem, calc(100vw - 1.5rem));
   gap: 1px;
-  padding: 0.25rem;
+  padding: 0.18rem;
   border: 1px solid rgba(36, 33, 30, 0.2);
   background: rgba(247, 246, 242, 0.92);
   box-shadow: 0 10px 30px rgba(36, 33, 30, 0.1);
@@ -576,14 +573,14 @@ body.blog-is-immersive #quarto-content > .blog-surface-shell, body.blog-is-immer
 }
 
 .blog-dock-secondary:hover, .blog-dock-nav:hover:not(:disabled) { background: rgba(168, 78, 48, 0.07); color: var(--accent-deep); }
-.blog-dock-secondary { flex: 0 0 auto; padding: 0.55rem 0.7rem; font-size: 0.8rem; white-space: nowrap; }
+.blog-dock-secondary { flex: 0 0 auto; padding: 0.45rem 0.6rem; font-size: 0.76rem; white-space: nowrap; }
 
 .blog-dock-nav {
   display: flex;
   flex: 1 1 0;
   min-width: 0;
   gap: 0.5rem;
-  padding: 0.55rem 0.65rem;
+  padding: 0.45rem 0.58rem;
   align-items: center;
   text-align: left;
 }
@@ -597,12 +594,12 @@ body.blog-is-immersive #quarto-content > .blog-surface-shell, body.blog-is-immer
 main.content {
   width: var(--blog-col) !important;
   max-width: var(--blog-col) !important;
-  margin: 0 auto 6rem !important;
-  padding-top: 3.2rem;
+  margin: 0 auto 4.5rem !important;
+  padding-top: 2.2rem;
   color: var(--ink);
   font-family: var(--body-font);
   font-size: 1.06rem;
-  line-height: 1.83;
+  line-height: 1.78;
 }
 
 main.content > p, main.content > ul, main.content > ol, main.content > blockquote { max-width: 40rem; }
@@ -612,7 +609,7 @@ main.content h1, main.content .title {
   margin: 0;
   color: var(--ink);
   font-family: var(--display-font);
-  font-size: clamp(2.2rem, 4.2vw, 4rem) !important;
+  font-size: clamp(2.05rem, 3.7vw, 3.55rem) !important;
   font-weight: 800;
   letter-spacing: -0.03em;
   line-height: 1.12;
@@ -669,12 +666,12 @@ body.blog-is-immersive .page-footer .nav-footer { width: var(--blog-read-col); m
   }
 
   .navbar, .navbar > .container, .navbar > .container-fluid, .navbar .container-xl,
-  .navbar .container-lg, .navbar .container-md, .navbar .container-sm { min-height: 3.95rem; }
+  .navbar .container-lg, .navbar .container-md, .navbar .container-sm { min-height: 3.55rem; }
 
   .navbar > .container, .navbar > .container-fluid, .navbar .container-xl, .navbar .container-lg,
   .navbar .container-md, .navbar .container-sm { width: var(--blog-browse-col) !important; gap: 0.6rem; }
 
-  .navbar .navbar-brand { min-height: 3.95rem; font-size: 1.05rem; }
+  .navbar .navbar-brand { min-height: 3.55rem; font-size: 1.02rem; }
   .navbar .navbar-collapse { justify-content: flex-end; }
   .navbar .navbar-nav.me-auto, .navbar .navbar-nav.ms-auto .nav-item:not(:last-child) { display: none; }
   .blog-surface-shell { margin-bottom: 5.5rem; }
@@ -709,16 +706,15 @@ body.blog-is-immersive .page-footer .nav-footer { width: var(--blog-read-col); m
   .blog-preview-text { margin-top: 0.8rem; font-size: 0.94rem; line-height: 1.72; }
   .blog-preview-media, .blog-preview-media img { max-height: 180px; }
   .blog-immersive {
-    padding-top: 1.7rem;
-    scroll-margin-top: 5rem;
+    padding-top: 1.1rem;
+    scroll-margin-top: 4.55rem;
   }
   .blog-immersive-layout {
     grid-template-columns: minmax(0, 1fr);
-    row-gap: 1.7rem;
+    row-gap: 1.2rem;
   }
-  .blog-immersive-title { font-size: clamp(2rem, 10vw, 2.8rem) !important; }
-  .blog-immersive-meta { margin: 0.9rem 0 2.2rem; }
-  .blog-immersive-body, main.content { font-size: 1rem; line-height: 1.82; }
+  .blog-immersive-title { font-size: clamp(1.85rem, 9.2vw, 2.5rem) !important; }
+  .blog-immersive-body, main.content { font-size: 1rem; line-height: 1.76; }
   .blog-immersive-body h2, main.content h2 { font-size: 1.55rem; }
 
   .blog-toc {
