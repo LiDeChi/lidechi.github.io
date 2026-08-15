@@ -1,9 +1,6 @@
-/* Site wallpaper — paths are relative to this file in assets/ */
+/* The visual texture is carried by type, spacing, and fine rules—not wallpaper. */
+html,
 body {
-  background-color: #fffcf7;
-  background-image: url("bg-math-physics.svg");
-  background-size: 960px 720px;
-  background-repeat: repeat;
-  background-position: 0 0;
-  background-attachment: fixed;
+  min-height: 100%;
+  background: #f7f6f2;
 }
