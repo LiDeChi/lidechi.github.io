@@ -3,8 +3,6 @@
  * Modes: preview stream (month scale + archive) → immersive (+ right TOC).
  */
 (() => {
-  const PREVIEW_LIMIT = 150;
-  const TAIL_CHARS = 8;
   const listing = document.querySelector(".quarto-listing");
   if (!listing || listing.dataset.blogSurface === "ready") return;
 
@@ -61,19 +59,7 @@
   function previewParts(text) {
     const full = cleanText(text);
     if (!full) return { html: "", expandable: false };
-    if (full.length <= PREVIEW_LIMIT) {
-      return { html: escapeHtml(full), expandable: false };
-    }
-    const headEnd = PREVIEW_LIMIT - TAIL_CHARS;
-    const head = full.slice(0, headEnd);
-    const tail = full.slice(headEnd, PREVIEW_LIMIT);
-    return {
-      html:
-        `${escapeHtml(head)}` +
-        `<span class="blog-tail-fade">${escapeHtml(tail)}</span>` +
-        `<span class="blog-expand-glyph" aria-hidden="true">›</span>`,
-      expandable: true,
-    };
+    return { html: escapeHtml(full), expandable: false };
   }
 
   function postHref(post) {
@@ -100,15 +86,6 @@
     return cleanText(
       post.querySelector(".listing-description")?.textContent || "",
     );
-  }
-
-  function postImage(post) {
-    const img = post.querySelector(".thumbnail img, img.thumbnail-image, img");
-    if (!img) return null;
-    return {
-      src: img.getAttribute("src") || img.currentSrc,
-      alt: img.getAttribute("alt") || postTitle(post),
-    };
   }
 
   function hrefKey(href) {
@@ -227,22 +204,26 @@
   function renderPreviewHtml(item) {
     const source = item.fullText || item.description || "";
     const parts = previewParts(source);
-    item.expandable =
-      parts.expandable || Boolean(item.image) || Boolean(item.href);
     const textHtml = parts.html
       ? `<p class="blog-preview-text">${parts.html}</p>`
       : "";
     return `
       <button type="button" class="blog-preview-hit" aria-label="展开：${escapeHtml(item.title)}">
         <h2 class="blog-preview-title">${escapeHtml(item.title)}</h2>
-        ${
-          item.image
-            ? `<div class="blog-preview-media"><img src="${escapeHtml(item.image.src)}" alt="${escapeHtml(item.image.alt)}" loading="lazy" decoding="async" /></div>`
-            : ""
-        }
         ${textHtml}
       </button>
     `;
+  }
+
+  function updatePreviewTruncation(root = previewMain) {
+    window.requestAnimationFrame(() => {
+      root.querySelectorAll(".blog-preview-text").forEach((text) => {
+        text.classList.toggle(
+          "is-truncated",
+          text.scrollHeight > text.clientHeight + 1,
+        );
+      });
+    });
   }
 
   function makeMonthLabel(group) {
@@ -267,7 +248,6 @@
       const date = postDate(post);
       const month = parseMonth(date);
       const description = postDescription(post);
-      const image = postImage(post);
       return {
         post,
         href,
@@ -276,7 +256,6 @@
         month,
         description,
         fullText: description,
-        image,
         key: hrefKey(href),
       };
     })
@@ -327,6 +306,9 @@
     section.appendChild(postsCol);
     previewMain.appendChild(section);
   }
+
+  updatePreviewTruncation();
+  window.addEventListener("resize", () => updatePreviewTruncation());
 
   function scrollToMonth(key) {
     const target = previewMain.querySelector(
@@ -382,6 +364,7 @@
             ?.addEventListener("click", () => {
               openImmersive(Number(item.card.dataset.index));
             });
+          updatePreviewTruncation(item.card);
         }
       }
     })
