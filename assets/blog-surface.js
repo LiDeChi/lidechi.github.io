@@ -96,12 +96,6 @@
     return cleanText(post.querySelector(".listing-date")?.textContent || "");
   }
 
-  function postCategories(post) {
-    return Array.from(post.querySelectorAll(".listing-category"))
-      .map((node) => cleanText(node.textContent))
-      .filter(Boolean);
-  }
-
   function postDescription(post) {
     return cleanText(
       post.querySelector(".listing-description")?.textContent || "",
@@ -187,13 +181,12 @@
       <div class="blog-immersive-layout">
         <article class="blog-immersive-article">
           <h1 class="blog-immersive-title"></h1>
-          <div class="blog-immersive-meta"></div>
           <div class="blog-immersive-body"></div>
         </article>
-        <aside class="blog-toc" aria-label="大纲">
+        <div class="blog-toc" aria-label="大纲" role="navigation">
           <div class="blog-toc-label">大纲</div>
           <nav class="blog-toc-nav"></nav>
-        </aside>
+        </div>
       </div>
     </div>
     <div class="blog-reading-dock" aria-label="博客阅读控制" hidden>
@@ -221,22 +214,15 @@
   const previewMain = shell.querySelector("[data-preview-main]");
   const archiveEl = shell.querySelector("[data-archive]");
   const immersive = shell.querySelector('[data-panel="immersive"]');
-  const immersiveMeta = shell.querySelector(".blog-immersive-meta");
   const immersiveTitle = shell.querySelector(".blog-immersive-title");
   const immersiveBody = shell.querySelector(".blog-immersive-body");
+  const toc = shell.querySelector(".blog-toc");
   const tocNav = shell.querySelector(".blog-toc-nav");
   const dockCatalog = shell.querySelector('[data-dock="catalog"]');
   const dockPrev = shell.querySelector('[data-dock="prev"]');
   const dockNext = shell.querySelector('[data-dock="next"]');
   const dockPrevText = shell.querySelector('[data-dock="prev-text"]');
   const dockNextText = shell.querySelector('[data-dock="next-text"]');
-
-  function categoryLine(item) {
-    return item.categories
-      .slice(0, 2)
-      .map((b) => escapeHtml(b))
-      .join(" · ");
-  }
 
   function renderPreviewHtml(item) {
     const source = item.fullText || item.description || "";
@@ -246,11 +232,9 @@
     const textHtml = parts.html
       ? `<p class="blog-preview-text">${parts.html}</p>`
       : "";
-    const meta = categoryLine(item);
     return `
       <button type="button" class="blog-preview-hit" aria-label="展开：${escapeHtml(item.title)}">
         <h2 class="blog-preview-title">${escapeHtml(item.title)}</h2>
-        ${meta ? `<div class="blog-preview-meta">${meta}</div>` : ""}
         ${
           item.image
             ? `<div class="blog-preview-media"><img src="${escapeHtml(item.image.src)}" alt="${escapeHtml(item.image.alt)}" loading="lazy" decoding="async" /></div>`
@@ -282,7 +266,6 @@
       const title = postTitle(post);
       const date = postDate(post);
       const month = parseMonth(date);
-      const categories = postCategories(post);
       const description = postDescription(post);
       const image = postImage(post);
       return {
@@ -291,7 +274,6 @@
         title,
         date,
         month,
-        categories,
         description,
         fullText: description,
         image,
@@ -413,8 +395,8 @@
       const tag = el.tagName.toLowerCase();
       return tag === "h2" || tag === "h3" || tag === "h4";
     });
+    toc.hidden = heads.length === 0;
     if (!heads.length) {
-      tocNav.innerHTML = `<span class="blog-toc-empty">—</span>`;
       return;
     }
     heads.forEach((el, i) => {
@@ -473,7 +455,6 @@
     const payload = {
       title:
         cleanText(doc.querySelector("h1.title")?.textContent) || item.title,
-      meta: [item.date, ...item.categories].filter(Boolean).join(" · "),
       bodyHtml,
     };
     state.cache.set(item.href, payload);
@@ -593,6 +574,13 @@
     }
   }
 
+  function scrollToArticleStart() {
+    const navHeight = document.querySelector(".navbar")?.getBoundingClientRect()
+      .height || 0;
+    const top = immersive.getBoundingClientRect().top + window.scrollY - navHeight - 12;
+    window.scrollTo({ top: Math.max(0, top), behavior: "auto" });
+  }
+
   async function openImmersive(index) {
     const item = items[index];
     if (!item) return;
@@ -600,25 +588,22 @@
     setMode("immersive");
     immersiveBody.innerHTML = `<p class="blog-immersive-loading">…</p>`;
     immersiveTitle.textContent = item.title;
-    immersiveMeta.textContent = [item.date, ...item.categories]
-      .filter(Boolean)
-      .join(" · ");
+    toc.hidden = true;
     tocNav.innerHTML = "";
 
     try {
       const article = await loadArticle(item);
       immersiveTitle.textContent = article.title;
-      immersiveMeta.textContent = article.meta;
       immersiveBody.innerHTML = article.bodyHtml;
       buildToc(immersiveBody);
       await typesetMath(immersiveBody);
       buildToc(immersiveBody);
-      immersive.scrollIntoView({ behavior: "smooth", block: "start" });
       if (item.href) {
         const url = new URL(window.location.href);
         url.hash = `article-${index}`;
         history.replaceState({}, "", url);
       }
+      scrollToArticleStart();
     } catch (error) {
       immersiveBody.innerHTML = `<p class="blog-immersive-error"><a href="${item.href || "#"}">打开原页面</a></p>`;
       console.error(error);
