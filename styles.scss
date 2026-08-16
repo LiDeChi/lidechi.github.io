@@ -505,7 +505,7 @@ body.blog-is-immersive #quarto-content > .blog-surface-shell, body.blog-is-immer
 // On a wide screen, reserve a matching left rail so the prose itself stays centered.
 @media (min-width: 1320px) {
   .blog-immersive-layout {
-    grid-template-columns: 10rem minmax(0, 48rem) 10rem;
+    grid-template-columns: 10rem minmax(0, 48rem) minmax(14rem, 18rem);
     column-gap: 1.5rem;
     row-gap: 0;
   }
@@ -531,30 +531,33 @@ body.blog-is-immersive #quarto-content > .blog-surface-shell, body.blog-is-immer
 
 }
 
-@media (min-width: 1400px) {
-  .blog-immersive-layout {
-    grid-template-columns: 10rem minmax(0, 48rem) minmax(14rem, 18rem);
-  }
-
+@media (min-width: 1320px) {
   .blog-story-section {
     display: grid;
-    grid-template-columns: minmax(0, 48rem) minmax(14rem, 18rem);
+    // Quarto gives `aside` elements named page-grid columns.  Keep this
+    // nested grid self-contained so the prose and the illustration share
+    // the same two tracks instead of resolving against Quarto's page grid.
+    grid-template-columns: minmax(0, 48rem) minmax(14rem, 18rem) !important;
     column-gap: 1.5rem;
     width: calc(48rem + 1.5rem + 18rem);
     align-items: start;
   }
 
-  .blog-story-prose {
-    grid-column: 1;
-    grid-row: 1;
+  .blog-story-section > .blog-story-prose {
+    grid-column: 1 / 2 !important;
+    grid-row: 1 !important;
+    width: auto !important;
+    max-width: none !important;
     min-width: 0;
   }
 
-  .blog-story-media {
+  .blog-story-section > .blog-story-media {
     position: sticky;
     top: 5.45rem;
-    grid-column: 2;
-    grid-row: 1;
+    grid-column: 2 / 3 !important;
+    grid-row: 1 !important;
+    width: auto !important;
+    max-width: none !important;
     align-self: start;
     min-width: 0;
   }
