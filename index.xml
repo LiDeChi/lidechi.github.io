@@ -24,6 +24,28 @@
   <pubDate>Sat, 15 Aug 2026 00:00:00 GMT</pubDate>
 </item>
 <item>
+  <title>杏仁核</title>
+  <dc:creator>李德驰 </dc:creator>
+  <link>https://lidechi.github.io/posts/amygdala.html</link>
+  <description><![CDATA[ 从威胁与价值评估、条件恐惧、消退学习到情境推断，理解杏仁核如何参与行为控制。 ]]></description>
+  <category>神经科学</category>
+  <category>认知科学</category>
+  <category>心理学</category>
+  <guid>https://lidechi.github.io/posts/amygdala.html</guid>
+  <pubDate>Thu, 13 Aug 2026 00:00:00 GMT</pubDate>
+</item>
+<item>
+  <title>由“环境剥夺”见感知（一）</title>
+  <dc:creator>李德驰 </dc:creator>
+  <link>https://lidechi.github.io/posts/environmental-deprivation-perception-01.html</link>
+  <description><![CDATA[ 从野孩子、情感剥夺、丰富环境到单眼剥夺实验，追问环境如何塑造感知与心智。 ]]></description>
+  <category>认知科学</category>
+  <category>神经科学</category>
+  <category>心理学</category>
+  <guid>https://lidechi.github.io/posts/environmental-deprivation-perception-01.html</guid>
+  <pubDate>Fri, 31 Jul 2026 00:00:00 GMT</pubDate>
+</item>
+<item>
   <title>奖励函数（一）：从期望效用到前景理论</title>
   <dc:creator>李德驰 </dc:creator>
   <link>https://lidechi.github.io/posts/reward-functions-01.html</link>
@@ -192,26 +214,6 @@
   <category>短文</category>
   <guid>https://lidechi.github.io/posts/frome-2026-07-12-10-02.html</guid>
   <pubDate>Sun, 12 Jul 2026 00:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>服务与探索</title>
-  <dc:creator>李德驰 </dc:creator>
-  <link>https://lidechi.github.io/posts/frome-2026-07-11-22-56.html</link>
-  <description><![CDATA[ 机器如何在探索世界和服务人类之间平衡？有没有一个简单的目标函数能囊括？ ]]></description>
-  <category>FroMe</category>
-  <category>短文</category>
-  <guid>https://lidechi.github.io/posts/frome-2026-07-11-22-56.html</guid>
-  <pubDate>Sat, 11 Jul 2026 00:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>不止任务</title>
-  <dc:creator>李德驰 </dc:creator>
-  <link>https://lidechi.github.io/posts/frome-2026-07-10-08-30.html</link>
-  <description><![CDATA[ 我这里想做的 Agent 不是只做任务的。 ]]></description>
-  <category>FroMe</category>
-  <category>短文</category>
-  <guid>https://lidechi.github.io/posts/frome-2026-07-10-08-30.html</guid>
-  <pubDate>Fri, 10 Jul 2026 00:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>
