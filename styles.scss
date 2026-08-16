@@ -375,7 +375,7 @@ body.blog-is-immersive #quarto-content > .blog-surface-shell, body.blog-is-immer
 
 .blog-immersive {
   width: 100%;
-  padding: 1.5rem 0 3rem;
+  padding: 1.1rem 0 2.4rem;
   scroll-margin-top: 5.7rem;
 }
 
@@ -399,7 +399,7 @@ body.blog-is-immersive #quarto-content > .blog-surface-shell, body.blog-is-immer
 
 .blog-immersive-title {
   max-width: none;
-  margin: 0 0 1.35rem;
+  margin: 0 0 0.8rem;
   border: 0 !important;
   color: var(--ink);
   font-family: var(--body-font);
@@ -413,15 +413,15 @@ body.blog-is-immersive #quarto-content > .blog-surface-shell, body.blog-is-immer
 .blog-immersive-body {
   color: var(--ink);
   font-family: var(--body-font);
-  font-size: 1.08rem;
-  line-height: 1.78;
+  font-size: 1.04rem;
+  line-height: 1.64;
 }
 
-.blog-immersive-body p, .blog-immersive-body li { max-width: none; margin-bottom: 1rem; }
+.blog-immersive-body p, .blog-immersive-body li { max-width: none; margin-bottom: 0.72rem; }
 
 .blog-immersive-body h2, .blog-immersive-body h3, .blog-immersive-body h4 {
   max-width: none;
-  margin: 2rem 0 0.85rem;
+  margin: 1.45rem 0 0.6rem;
   border: 0 !important;
   color: var(--ink);
   font-family: var(--body-font);
@@ -436,7 +436,7 @@ body.blog-is-immersive #quarto-content > .blog-surface-shell, body.blog-is-immer
 .blog-immersive-body h4 { font-size: 1.08rem; }
 
 .blog-immersive-body blockquote {
-  margin: 1.8rem 0;
+  margin: 1.2rem 0;
   padding: 0.1rem 0 0.1rem 1.3rem;
   border-left: 2px solid var(--accent);
   color: var(--ink-soft);
@@ -451,7 +451,7 @@ body.blog-is-immersive #quarto-content > .blog-surface-shell, body.blog-is-immer
 .blog-immersive-body pre, .blog-immersive-body table, .blog-immersive-body mjx-container { overflow-x: auto; }
 
 .blog-immersive-body pre {
-  margin: 1.65rem 0;
+  margin: 1.2rem 0;
   padding: 1rem 1.15rem;
   border: 1px solid var(--line);
   background: var(--paper-deep);
@@ -630,19 +630,20 @@ body.blog-is-immersive #quarto-content > .blog-surface-shell, body.blog-is-immer
 main.content {
   width: var(--blog-col) !important;
   max-width: var(--blog-col) !important;
-  margin: 0 auto 4.5rem !important;
-  padding-top: 2.2rem;
+  margin: 0 auto 3rem !important;
+  padding-top: 1.5rem;
   color: var(--ink);
   font-family: var(--body-font);
-  font-size: 1.06rem;
-  line-height: 1.78;
+  font-size: 1.04rem;
+  line-height: 1.66;
 }
 
 main.content > p, main.content > ul, main.content > ol, main.content > blockquote { max-width: 40rem; }
+main.content p, main.content li { margin-bottom: 0.72rem; }
 
 main.content h1, main.content .title {
   max-width: none;
-  margin: 0 0 1.35rem;
+  margin: 0 0 0.8rem;
   border: 0 !important;
   color: var(--ink);
   font-family: var(--body-font);
@@ -655,7 +656,7 @@ main.content h1, main.content .title {
 
 main.content h2, main.content h3, main.content h4 {
   max-width: none;
-  margin: 2rem 0 0.85rem;
+  margin: 1.45rem 0 0.6rem;
   border: 0 !important;
   color: var(--ink);
   font-family: var(--body-font);
@@ -680,15 +681,8 @@ blockquote { border-left: 2px solid var(--accent); color: var(--ink-soft); }
 
 figure img, .quarto-figure img { border: 1px solid var(--line); background: #fff; }
 
-.article-translation {
-  max-width: 40rem;
-  margin-top: 3rem;
-  padding: 1.25rem 0;
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-}
-
-.article-translation summary { color: var(--accent); font-family: var(--ui-font); font-size: 0.76rem; cursor: pointer; }
+// English appendices remain in source notes but are not part of the public article surface.
+.article-translation { display: none !important; }
 
 // ---- Footer -------------------------------------------------------------
 
