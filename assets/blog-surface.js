@@ -613,7 +613,10 @@
       if (source) {
         section = document.createElement("section");
         section.className = "blog-story-section";
-        const media = document.createElement("aside");
+        // Quarto reserves the semantic <aside> tag for its page-margin grid.
+        // This is a local media track, so use a neutral wrapper and preserve
+        // the accessible label without entering Quarto's outer grid.
+        const media = document.createElement("div");
         media.className = "blog-story-media";
         media.setAttribute("aria-label", "文中插图");
         const prose = document.createElement("div");
