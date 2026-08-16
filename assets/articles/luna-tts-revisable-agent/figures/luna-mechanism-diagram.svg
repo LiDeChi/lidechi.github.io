@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Luna-TTS 的两种生成时间结构</title>
+  <desc id="desc">语音经 Luna-Codec 变为二维 token 网格。Luna-TTS 对全句反复修订后一次提交，Realtime 按 1.28 秒分块，每块内部反复修订后提交。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0 0 L12 6 L0 12 Z" fill="#665f54"/>
+    </marker>
+    <pattern id="gridMask" width="34" height="34" patternUnits="userSpaceOnUse">
+      <rect width="34" height="34" fill="#d8d3ca"/>
+      <path d="M34 0H0V34" fill="none" stroke="#fffdf8" stroke-width="2"/>
+    </pattern>
+    <pattern id="gridDone" width="34" height="34" patternUnits="userSpaceOnUse">
+      <rect width="34" height="34" fill="#93ae97"/>
+      <path d="M34 0H0V34" fill="none" stroke="#f7f4ec" stroke-width="2"/>
+    </pattern>
+    <style>
+      .title{font:700 44px 'PingFang SC','Noto Sans CJK SC',sans-serif;fill:#292722}
+      .h{font:650 30px 'PingFang SC','Noto Sans CJK SC',sans-serif;fill:#292722}
+      .body{font:400 24px 'PingFang SC','Noto Sans CJK SC',sans-serif;fill:#4f4a42}
+      .small{font:400 20px 'PingFang SC','Noto Sans CJK SC',sans-serif;fill:#6c655b}
+      .mono{font:500 21px ui-monospace,SFMono-Regular,Menlo,monospace;fill:#39362f}
+    </style>
+  </defs>
+  <rect width="1600" height="900" fill="#f5f1e7"/>
+  <text x="90" y="82" class="title">Luna-TTS：同一张语音网格，两种提交方式</text>
+  <text x="90" y="125" class="body">核心变量不是“会不会回头”，而是一次保留多大的可修订范围</text>
+
+  <g transform="translate(95 190)">
+    <rect x="0" y="0" width="330" height="170" rx="20" fill="#fffdf8" stroke="#b7ac9b" stroke-width="3"/>
+    <path d="M35 72 C55 30 75 114 95 72 S135 30 155 72 S195 114 215 72 S255 30 275 72" fill="none" stroke="#8c6b4d" stroke-width="6"/>
+    <text x="165" y="125" text-anchor="middle" class="h">24 kHz 波形</text>
+    <text x="165" y="154" text-anchor="middle" class="small">连续声音</text>
+  </g>
+  <line x1="435" y1="275" x2="515" y2="275" stroke="#665f54" stroke-width="4" marker-end="url(#arrow)"/>
+  <g transform="translate(530 190)">
+    <rect x="0" y="0" width="360" height="170" rx="20" fill="#e5ddcf" stroke="#9e8b70" stroke-width="3"/>
+    <text x="180" y="66" text-anchor="middle" class="h">Luna-Codec</text>
+    <text x="180" y="108" text-anchor="middle" class="body">25 frame/s × 8 码本</text>
+    <text x="180" y="142" text-anchor="middle" class="small">每秒 200 个离散 token</text>
+  </g>
+  <line x1="900" y1="275" x2="980" y2="275" stroke="#665f54" stroke-width="4" marker-end="url(#arrow)"/>
+  <g transform="translate(995 190)">
+    <rect x="0" y="0" width="476" height="170" rx="20" fill="#fffdf8" stroke="#9a9387" stroke-width="3"/>
+    <rect x="28" y="32" width="420" height="102" rx="4" fill="url(#gridMask)"/>
+    <text x="238" y="162" text-anchor="middle" class="mono">X ∈ V^(T×8)</text>
+  </g>
+
+  <line x1="800" y1="395" x2="800" y2="438" stroke="#665f54" stroke-width="4"/>
+  <line x1="800" y1="438" x2="425" y2="438" stroke="#665f54" stroke-width="4"/>
+  <line x1="800" y1="438" x2="1175" y2="438" stroke="#665f54" stroke-width="4"/>
+  <line x1="425" y1="438" x2="425" y2="475" stroke="#665f54" stroke-width="4" marker-end="url(#arrow)"/>
+  <line x1="1175" y1="438" x2="1175" y2="475" stroke="#665f54" stroke-width="4" marker-end="url(#arrow)"/>
+
+  <g transform="translate(90 490)">
+    <rect x="0" y="0" width="670" height="270" rx="24" fill="#fffdf8" stroke="#78917e" stroke-width="4"/>
+    <text x="34" y="55" class="h">Luna-TTS｜全句可修订</text>
+    <rect x="36" y="86" width="205" height="102" rx="4" fill="url(#gridMask)"/>
+    <text x="265" y="148" class="h">→ 32 轮 →</text>
+    <rect x="425" y="86" width="205" height="102" rx="4" fill="url(#gridDone)"/>
+    <text x="335" y="231" text-anchor="middle" class="body">整张网格完成后，一次提交整段音频</text>
+    <text x="335" y="260" text-anchor="middle" class="small">离线、批量、编辑｜修订范围大，首次出声较晚</text>
+  </g>
+
+  <g transform="translate(840 490)">
+    <rect x="0" y="0" width="670" height="270" rx="24" fill="#fffdf8" stroke="#9e795f" stroke-width="4"/>
+    <text x="34" y="55" class="h">Luna-TTS Realtime｜分块可修订</text>
+    <rect x="36" y="92" width="150" height="92" rx="4" fill="url(#gridDone)"/>
+    <rect x="190" y="92" width="150" height="92" rx="4" fill="url(#gridDone)"/>
+    <rect x="344" y="92" width="150" height="92" rx="4" fill="url(#gridMask)" stroke="#b56f48" stroke-width="4"/>
+    <rect x="498" y="92" width="132" height="92" rx="4" fill="#eeeae1" stroke="#bcb4a7" stroke-width="3" stroke-dasharray="9 8"/>
+    <text x="111" y="210" text-anchor="middle" class="small">已提交</text>
+    <text x="265" y="210" text-anchor="middle" class="small">已提交</text>
+    <text x="419" y="210" text-anchor="middle" class="small">块内反复修订</text>
+    <text x="564" y="210" text-anchor="middle" class="small">未来</text>
+    <text x="335" y="252" text-anchor="middle" class="body">每 32 frame（约 1.28 秒）越过一次边界</text>
+  </g>
+
+  <g transform="translate(210 815)">
+    <text x="0" y="0" class="small">模型谱系</text>
+    <text x="130" y="0" class="mono">Qwen3 causal</text>
+    <text x="350" y="0" class="body">→</text>
+    <text x="405" y="0" class="mono">bidirectional</text>
+    <text x="655" y="0" class="body">→</text>
+    <text x="710" y="0" class="mono">block-causal</text>
+  </g>
+  <text x="800" y="866" text-anchor="middle" class="small">据 Luna-TTS Family Technical Report 重绘｜非原论文 Figure 1</text>
+</svg>
