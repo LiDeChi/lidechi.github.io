@@ -166,6 +166,13 @@
         </div>
       </div>
     </div>
+    <div class="blog-media-lightbox" data-media-lightbox role="dialog" aria-modal="true" aria-label="查看插图" hidden>
+      <button type="button" class="blog-media-lightbox-close" data-media-lightbox-close aria-label="关闭插图">关闭</button>
+      <figure class="blog-media-lightbox-figure">
+        <img class="blog-media-lightbox-image" data-media-lightbox-image alt="" />
+        <figcaption class="blog-media-lightbox-caption" data-media-lightbox-caption hidden></figcaption>
+      </figure>
+    </div>
     <div class="blog-reading-dock" aria-label="博客阅读控制" hidden>
       <button type="button" class="blog-dock-secondary" data-dock="catalog">返回预览</button>
       <button type="button" class="blog-dock-nav" data-dock="prev" disabled>
@@ -195,6 +202,10 @@
   const immersiveBody = shell.querySelector(".blog-immersive-body");
   const toc = shell.querySelector(".blog-toc");
   const tocNav = shell.querySelector(".blog-toc-nav");
+  const mediaLightbox = shell.querySelector("[data-media-lightbox]");
+  const mediaLightboxImage = shell.querySelector("[data-media-lightbox-image]");
+  const mediaLightboxCaption = shell.querySelector("[data-media-lightbox-caption]");
+  const mediaLightboxClose = shell.querySelector("[data-media-lightbox-close]");
   const dockCatalog = shell.querySelector('[data-dock="catalog"]');
   const dockPrev = shell.querySelector('[data-dock="prev"]');
   const dockNext = shell.querySelector('[data-dock="next"]');
@@ -581,20 +592,38 @@
     return block.parentElement === root ? block : null;
   }
 
-  function resetMediaFlow() {
-    immersiveBody.classList.remove("blog-has-media-flow");
-    immersiveBody.querySelectorAll(".blog-story-section").forEach((section) => {
-      const media = section.querySelector(":scope > .blog-story-media");
-      const prose = section.querySelector(":scope > .blog-story-prose");
-      [media, prose].forEach((part) => {
-        while (part?.firstChild) section.before(part.firstChild);
+  function flattenArticleSections(root) {
+    const blocks = [];
+    const appendChildren = (container) => {
+      Array.from(container.children).forEach((child) => {
+        if (child.tagName === "SECTION") {
+          appendChildren(child);
+        } else {
+          blocks.push(child);
+        }
       });
-      section.remove();
-    });
+    };
+    appendChildren(root);
+    root.replaceChildren(...blocks);
+  }
+
+  function makeStorySection() {
+    const section = document.createElement("section");
+    section.className = "blog-story-section";
+    // Quarto reserves the semantic <aside> tag for its page-margin grid.
+    // This is a local media track, so use a neutral wrapper and preserve
+    // the accessible label without entering Quarto's outer grid.
+    const media = document.createElement("div");
+    media.className = "blog-story-media";
+    media.setAttribute("aria-label", "文中插图");
+    const prose = document.createElement("div");
+    prose.className = "blog-story-prose";
+    section.append(media, prose);
+    return { section, media, prose };
   }
 
   function setupMediaFlow(root) {
-    resetMediaFlow();
+    flattenArticleSections(root);
     const mediaByRootBlock = new Map();
     root.querySelectorAll("img").forEach((image) => {
       if (image.closest(".article-translation, .callout, table, pre, .sourceCode")) {
@@ -602,39 +631,67 @@
       }
       const source = mediaBlockForImage(image);
       const rootBlock = rootBlockForNode(source, root);
-      if (!rootBlock || mediaByRootBlock.has(rootBlock)) return;
+      if (!rootBlock) return;
       mediaByRootBlock.set(rootBlock, source);
     });
     if (!mediaByRootBlock.size) return;
 
-    let section = null;
+    let story = null;
     Array.from(root.children).forEach((node) => {
       const source = mediaByRootBlock.get(node);
       if (source) {
-        section = document.createElement("section");
-        section.className = "blog-story-section";
-        // Quarto reserves the semantic <aside> tag for its page-margin grid.
-        // This is a local media track, so use a neutral wrapper and preserve
-        // the accessible label without entering Quarto's outer grid.
-        const media = document.createElement("div");
-        media.className = "blog-story-media";
-        media.setAttribute("aria-label", "文中插图");
-        const prose = document.createElement("div");
-        prose.className = "blog-story-prose";
-        section.append(media, prose);
-        root.append(section);
-        media.append(source);
-        if (node !== source) prose.append(node);
+        story = makeStorySection();
+        root.append(story.section);
+        story.media.append(source);
+        if (node !== source) story.prose.append(node);
         return;
       }
 
-      if (section) {
-        section.querySelector(".blog-story-prose")?.append(node);
+      if (story) {
+        story.prose.append(node);
       } else {
         root.append(node);
       }
     });
     root.classList.add("blog-has-media-flow");
+  }
+
+  function imageCaption(image) {
+    return cleanText(
+      image.closest("figure, .quarto-figure")?.querySelector("figcaption")?.textContent ||
+      image.getAttribute("alt") ||
+      "",
+    );
+  }
+
+  function closeMediaLightbox() {
+    if (mediaLightbox.hidden) return;
+    mediaLightbox.hidden = true;
+    document.body.classList.remove("blog-media-lightbox-open");
+    mediaLightboxImage.removeAttribute("src");
+  }
+
+  function openMediaLightbox(image) {
+    const src = image.currentSrc || image.src;
+    if (!src) return;
+    const caption = imageCaption(image);
+    mediaLightboxImage.src = src;
+    mediaLightboxImage.alt = image.alt || caption || "文章插图";
+    mediaLightboxCaption.textContent = caption;
+    mediaLightboxCaption.hidden = !caption;
+    mediaLightbox.hidden = false;
+    document.body.classList.add("blog-media-lightbox-open");
+    mediaLightboxClose.focus({ preventScroll: true });
+  }
+
+  function prepareZoomableImages(root) {
+    root.querySelectorAll("img").forEach((image) => {
+      if (image.closest(".article-translation")) return;
+      image.classList.add("blog-zoomable-image");
+      image.tabIndex = 0;
+      image.setAttribute("role", "button");
+      image.setAttribute("aria-label", `放大查看：${imageCaption(image) || "文章插图"}`);
+    });
   }
 
   function scrollToArticleStart() {
@@ -649,7 +706,6 @@
     if (!item) return;
     state.activeIndex = index;
     setMode("immersive");
-    resetMediaFlow();
     immersiveBody.innerHTML = `<p class="blog-immersive-loading">…</p>`;
     immersiveTitle.textContent = item.title;
     toc.hidden = true;
@@ -660,6 +716,7 @@
       immersiveTitle.textContent = article.title;
       immersiveBody.innerHTML = article.bodyHtml;
       setupMediaFlow(immersiveBody);
+      prepareZoomableImages(immersiveBody);
       buildToc(immersiveBody);
       await typesetMath(immersiveBody);
       buildToc(immersiveBody);
@@ -676,7 +733,7 @@
   }
 
   function backToPreview() {
-    resetMediaFlow();
+    closeMediaLightbox();
     setMode("preview");
     const url = new URL(window.location.href);
     url.hash = "";
@@ -695,6 +752,30 @@
 
   dockCatalog.addEventListener("click", () => {
     backToPreview();
+  });
+
+  immersiveBody.addEventListener("click", (event) => {
+    const image = event.target.closest(".blog-zoomable-image");
+    if (!image || !immersiveBody.contains(image)) return;
+    event.preventDefault();
+    openMediaLightbox(image);
+  });
+
+  immersiveBody.addEventListener("keydown", (event) => {
+    const image = event.target.closest(".blog-zoomable-image");
+    if (!image || (event.key !== "Enter" && event.key !== " ")) return;
+    event.preventDefault();
+    openMediaLightbox(image);
+  });
+
+  mediaLightbox.addEventListener("click", (event) => {
+    if (event.target === mediaLightbox || event.target === mediaLightboxImage) {
+      closeMediaLightbox();
+    }
+  });
+  mediaLightboxClose.addEventListener("click", closeMediaLightbox);
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeMediaLightbox();
   });
 
   dockPrev.addEventListener("click", () => {

@@ -294,14 +294,25 @@ body.blog-is-immersive #quarto-content > .blog-surface-shell, body.blog-is-immer
 .blog-month-num { color: var(--accent); font-size: 0.82rem; font-weight: 500; }
 
 .blog-preview-item {
+  position: relative;
   min-width: 0;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 0;
   background: transparent;
   scroll-margin-top: 6rem;
   transition: background-color 180ms ease;
 }
 
-.blog-preview-item:first-child { border-top: 0; }
+.blog-preview-item:not(:last-child)::after {
+  position: absolute;
+  bottom: 0;
+  left: 0.1rem;
+  width: min(38rem, 76%);
+  height: 1px;
+  background: linear-gradient(90deg, rgba(201, 195, 185, 0.92) 0%, rgba(222, 218, 209, 0.72) 58%, rgba(222, 218, 209, 0) 100%);
+  content: "";
+  pointer-events: none;
+}
+
 .blog-preview-item.is-active, .blog-preview-item:hover { background: rgba(168, 78, 48, 0.028); }
 
 .blog-preview-hit {
@@ -460,6 +471,7 @@ body.blog-is-immersive #quarto-content > .blog-surface-shell, body.blog-is-immer
 
 .blog-story-section { display: contents; }
 .blog-story-media { display: block; }
+.blog-immersive-body img.blog-zoomable-image { cursor: zoom-in; touch-action: manipulation; }
 
 .blog-immersive-loading, .blog-immersive-error { color: var(--ink-faint); font-family: var(--ui-font); font-size: 0.8rem; }
 
@@ -580,6 +592,72 @@ body.blog-is-immersive #quarto-content > .blog-surface-shell, body.blog-is-immer
     line-height: 1.5;
   }
 }
+
+// ---- Image reader --------------------------------------------------------
+
+.blog-media-lightbox[hidden] { display: none !important; }
+
+.blog-media-lightbox {
+  position: fixed;
+  // Quarto's fixed navbar uses an elevated stacking layer.  The reader
+  // must sit above it so its close control remains reachable.
+  z-index: 3000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: clamp(1rem, 3vw, 3rem);
+  background: rgba(29, 27, 24, 0.84);
+  backdrop-filter: blur(8px);
+}
+
+.blog-media-lightbox-figure {
+  display: grid;
+  max-width: min(78rem, calc(100vw - 2rem));
+  max-height: calc(100dvh - 2rem);
+  margin: 0;
+  gap: 0.65rem;
+}
+
+.blog-media-lightbox-image {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: calc(100dvh - 6rem);
+  margin: auto;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  background: #fff;
+  cursor: zoom-out;
+}
+
+.blog-media-lightbox-caption {
+  max-width: 68rem;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.84);
+  font-family: var(--body-font);
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+.blog-media-lightbox-close {
+  position: absolute;
+  top: max(0.85rem, env(safe-area-inset-top));
+  right: max(0.85rem, env(safe-area-inset-right));
+  min-height: 2.35rem;
+  padding: 0.42rem 0.72rem;
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  border-radius: 999px;
+  background: rgba(28, 26, 23, 0.48);
+  color: #fff;
+  font-family: var(--body-font);
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.blog-media-lightbox-close:hover,
+.blog-media-lightbox-close:focus-visible { background: rgba(255, 255, 255, 0.14); }
+
+body.blog-media-lightbox-open { overflow: hidden; }
 
 // ---- Reading dock -------------------------------------------------------
 
