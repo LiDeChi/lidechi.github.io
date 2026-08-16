@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-Hans" xml:lang="zh-Hans"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="李德驰">
+<meta name="description" content="从 Luna-TTS 的全句修订与分块提交出发，理解 Agent 为什么需要把候选世界与真实世界分开，并在可逆空间里充分修改、在不可逆边界前明确承诺。">
+
+<title>Agent 不该只会往前走：从 Luna-TTS 看一种“可反悔”的智能 – 李德驰的研究笔记</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../assets/favicon.svg" rel="icon" type="image/svg+xml">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-2648368c480a93760e7950a934983ca6.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "没有结果",
+    "search-matching-documents-text": "匹配的文档",
+    "search-copy-link-title": "复制搜索链接",
+    "search-hide-matches-text": "隐藏其它匹配结果",
+    "search-more-match-text": "更多匹配结果",
+    "search-more-matches-text": "更多匹配结果",
+    "search-clear-button-title": "清除",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "取消",
+    "search-submit-button-title": "提交",
+    "search-label": "搜索"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+<script>
+  // MathJax 4 otherwise treats ordinary formula clicks/focus as a request to
+  // enter its highlighted, keyboard-driven expression explorer.
+  window.MathJax = {
+    ...(window.MathJax || {}),
+    options: {
+      ...(window.MathJax?.options || {}),
+      enableExplorer: false,
+      enableExplorerHelp: false,
+      menuOptions: {
+        ...(window.MathJax?.options?.menuOptions || {}),
+        settings: {
+          ...(window.MathJax?.options?.menuOptions?.settings || {}),
+          speech: false,
+          braille: false,
+        },
+      },
+      a11y: {
+        ...(window.MathJax?.options?.a11y || {}),
+        speech: false,
+        braille: false,
+      },
+    },
+  };
+</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../assets/site-bg.css">
+<meta property="og:title" content="Agent 不该只会往前走：从 Luna-TTS 看一种“可反悔”的智能 – 李德驰的研究笔记">
+<meta property="og:description" content="从 Luna-TTS 的全句修订与分块提交出发，理解 Agent 为什么需要把候选世界与真实世界分开，并在可逆空间里充分修改、在不可逆边界前明确承诺。">
+<meta property="og:image" content="https://lidechi.github.io/assets/articles/luna-tts-revisable-agent/figures/recording-studio-real.jpg">
+<meta property="og:site_name" content="李德驰的研究笔记">
+<meta name="twitter:title" content="Agent 不该只会往前走：从 Luna-TTS 看一种“可反悔”的智能 – 李德驰的研究笔记">
+<meta name="twitter:description" content="从 Luna-TTS 的全句修订与分块提交出发，理解 Agent 为什么需要把候选世界与真实世界分开，并在可逆空间里充分修改、在不可逆边界前明确承诺。">
+<meta name="twitter:image" content="https://lidechi.github.io/assets/articles/luna-tts-revisable-agent/figures/recording-studio-real.jpg">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">李德驰的研究笔记</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="搜索"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="展开或折叠导航栏" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">文章</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://wordm.us/"> <i class="bi bi-house" role="img" aria-label="主页 wordm.us">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://x.com/parsonjian"> <i class="bi bi-twitter-x" role="img" aria-label="X">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://substack.com/@parson1"> <i class="bi bi-newspaper" role="img" aria-label="Substack">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://t.me/fount_ai"> <i class="bi bi-telegram" role="img" aria-label="Telegram">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://discord.gg/2p7fJpXequ"> <i class="bi bi-discord" role="img" aria-label="Discord">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.reddit.com/r/Fount/"> <i class="bi bi-reddit" role="img" aria-label="Reddit">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="../index.xml"> <i class="bi bi-rss" role="img" aria-label="RSS">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">该页面内容</h2>
+   
+  <ul>
+  <li><a href="#不是更会说而是更晚承诺" id="toc-不是更会说而是更晚承诺" class="nav-link active" data-scroll-target="#不是更会说而是更晚承诺">不是更会说，而是更晚承诺</a></li>
+  <li><a href="#从语音到-agent先分清候选世界与真实世界" id="toc-从语音到-agent先分清候选世界与真实世界" class="nav-link" data-scroll-target="#从语音到-agent先分清候选世界与真实世界">从语音到 Agent：先分清候选世界与真实世界</a></li>
+  <li><a href="#新方向不是永远反悔而是学会怎样承诺" id="toc-新方向不是永远反悔而是学会怎样承诺" class="nav-link" data-scroll-target="#新方向不是永远反悔而是学会怎样承诺">新方向不是永远反悔，而是学会怎样承诺</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Agent 不该只会往前走：从 Luna-TTS 看一种“可反悔”的智能</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">Agent System</div>
+    <div class="quarto-category">人工智能</div>
+    <div class="quarto-category">语音生成</div>
+    <div class="quarto-category">生成模型</div>
+  </div>
+  </div>
+
+<div>
+  <div class="description">
+    从 Luna-TTS 的全句修订与分块提交出发，理解 Agent 为什么需要把候选世界与真实世界分开，并在可逆空间里充分修改、在不可逆边界前明确承诺。
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">作者</div>
+    <div class="quarto-title-meta-contents">
+             <p>李德驰 </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">发布于</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">2026年8月16日</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- wordm:lang zh -->
+<p><em>Luna-TTS 看起来在解决声音如何生成，真正触及的却是一个更普遍的问题：一个智能系统应当把候选结果保留多久，又应当在什么时候承担“已经来不及改”的代价。</em></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../assets/articles/luna-tts-revisable-agent/figures/recording-studio-real.jpg" class="img-fluid figure-img"></p>
+<figcaption>一间真实的录音棚</figcaption>
+</figure>
+</div>
+<p><em>图 1｜真实录音棚。声音并不是文字换一种载体，而是一场需要在时间上整体组织的表演。摄影：Hc Digital，来源：<a href="https://unsplash.com/photos/a-recording-studio-with-microphones-headphones-and-microphones-g0PcDhany4Y">Unsplash</a>，依 Unsplash License 使用。</em></p>
+<p>今天的大模型已经非常擅长向前生成。写文章时，它一个 token 接一个 token；做 Agent 时，它观察环境、形成判断、调用工具，再把新的结果接到历史末端。我们甚至逐渐把这种单向推进当成了智能本身：过去不断增长，未来从过去的尾部展开。2026 年 8 月 12 日发布的 Luna-TTS 提出了一个值得注意的反例。它原本只想改变语音生成，却逼出了一个更一般的判断：如果一个结果的各部分高度牵连，过早把局部决定写死，本身可能就是一种错误的计算方式。</p>
+<p>这项工作目前只是一份刚公开的 v1 技术报告，尚不能把作者自报的指标视为独立复现后的定论；但它提出的问题很清楚。Luna-TTS Family 从 Qwen3-0.6B 出发，沿着 <code>causal → bidirectional → block-causal</code> 连续训练，得到离线的 Luna-TTS 与流式的 Luna-TTS Realtime。</p>
+<p>两者共用 tokenizer、数据管线和 0.6B 主干，并在约 100 万小时中、英、日、韩语音上预训练。它不是给传统 TTS 再外挂一个情绪模块，而是在重新安排“哪里还能修改、哪里必须提交”。详见 <a href="https://arxiv.org/abs/2608.11593">Luna-TTS Family Technical Report</a>。</p>
+<section id="不是更会说而是更晚承诺" class="level2">
+<h2 class="anchored" data-anchor-id="不是更会说而是更晚承诺">不是更会说，而是更晚承诺</h2>
+<p>传统自回归语音模型把整段声学 token 写成 <span class="math inline">\(X=(x_1,\ldots,x_N)\)</span>，再作分解 <span class="math inline">\(p(X\mid c)=\prod_i p(x_i\mid x_{&lt;i},c)\)</span>，其中 <span class="math inline">\(c\)</span> 是文本与参考声音。这里容易产生一个误解：自回归模型并非看不到句尾文字，它能读完整段文本；真正的限制在生成侧。一个声学 token 一旦进入 prefix，后续模型只能接受它，不能因为五秒后的语气发生变化，就把五秒前的起音重新说一遍。强模型可以提前规划全句，但它必须尽量一次规划正确。</p>
+<p>声音偏偏不是一串彼此独立的字。说“我没事，你先走吧”时，释然、恼怒或故作轻松，并不是最后给每个字贴一个 emotion tag。语速、基频、强弱、停顿、气声、句尾衰减乃至一次吸气，会跨越数百毫秒甚至整句话，共同构成一次表演。句尾如何落下，可能反过来决定句首该怎样起音。因此局部变量 <span class="math inline">\(x_i\)</span> 的合适取值经常依赖相距很远的 <span class="math inline">\(x_j\)</span>。自回归并非做不到这种长程协调，只是它主要依赖预见；Luna 增加的则是事后修订的权利。</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../assets/articles/luna-tts-revisable-agent/figures/luna-global-refinement.png" class="img-fluid figure-img"></p>
+<figcaption>磁带剪辑师在整张工作台上调整一段表演</figcaption>
+</figure>
+</div>
+<p><em>图 2｜把全句留在工作台上。Luna-TTS 更像先铺开整段磁带，再反复调整各处关系，而不是录下一个词就把母带封存。AI 生成图。</em></p>
+<p>Luna 首先把声音变成适合联合修订的对象。Luna-Codec 将 24 kHz 波形压缩为每秒 25 个 frame，每个 frame 由 <span class="math inline">\(Q=8\)</span> 个 residual codebook token 表示，每个 codebook 有 2048 个条目。于是语音成为二维网格 <span class="math inline">\(X\in\mathcal V^{T\times 8}\)</span>：横轴是时间，纵轴是残差码本深度，总计每秒 200 个 token、约 2.2 kbps。</p>
+<p>时间确实有先后，码本深度却没有天然的“第一层必须先于第二层生成”的物理因果。八枚 token 是同一帧声音的残差描述，各层彼此相关，却不自带唯一的线性顺序。把整张网格硬拉成一条序列，是建模选择，而不是声音自身的秩序。</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../assets/articles/luna-tts-revisable-agent/figures/luna-mechanism-diagram.svg" class="img-fluid figure-img"></p>
+<figcaption>Luna-TTS 的两种生成时间结构</figcaption>
+</figure>
+</div>
+<p><em>图 3｜同一张语音网格的两种提交方式。全句版在整张网格上反复修订，实时版则按 1.28 秒分块提交。依据 <a href="https://arxiv.org/pdf/2608.11593">Luna-TTS 原始技术报告</a> 重绘。</em></p>
+<p>Luna-TTS 采用 absorbing-state masked diffusion。若 <span class="math inline">\(X_0\)</span> 是干净语音网格，在噪声强度 <span class="math inline">\(t\in(0,1]\)</span> 下，每个位置以概率 <span class="math inline">\(t\)</span> 被替换为 MASK，即 <span class="math inline">\(q_t(X_t^{i,q}=M\mid X_0)=t\)</span>。模型学习在文本、参考声音和其余可见 token 的条件下，同时恢复所有被遮住的位置。</p>
+<p>推理则从全 MASK 的 <span class="math inline">\(T\times8\)</span> 网格开始。每一轮同时预测所有空位，先固定高置信度部分，再让不确定位置进入下一轮。论文默认用 <span class="math inline">\(S=32\)</span> 轮 refinement；重要的不是数字 32，而是每个 <span class="math inline">\(X^{(s)}\)</span> 都仍代表整段声音，句首与句尾在交付前都还可以彼此校正。</p>
+<p>因此 Luna-TTS 的体验更像“输入整句话—等待整段生成—得到完整音频”，而不是边算边播。它需要外部 duration predictor 先估计帧数 <span class="math inline">\(T\)</span>，却也因此能在输出前反复协调全句，还天然支持 infilling：固定前后语音，只重做中间一段。</p>
+<p>Luna-TTS Realtime 则把声音切成 32 frame、约 1.28 秒一块，使用 <span class="math inline">\(p(X\mid c)=\prod_b p(X^{(b)}\mid X^{(&lt;b)},c)\)</span>。块之间按时间前进，块内部仍并行去噪；一块完成便进入 KV cache 并开始播放，之后不能再改。</p>
+<p>这一区别不是“完整版不完善，所以又补了实时版”，而是同一矛盾的两个答案：Luna-TTS 的可修订范围大，第一次出声较晚；Realtime 的可修订范围小，却能尽早出声。它们不是高低版本，而是针对不同交付压力选择的两个 operating point。</p>
+<p>在<a href="https://arxiv.org/html/2608.11593#S5.SS2">原报告的 warmed 本地测试</a>中，排除网络传输、双 H20 并行 CFG 条件下，Realtime 生成首个 1.28 秒音频块用时 41.6 ms；而在 CV3-Eval 的困难子集上，它又明显落后于全句版。数字仍待复现，但关系很稳定：越早提交，越早失去纠错空间。</p>
+</section>
+<section id="从语音到-agent先分清候选世界与真实世界" class="level2">
+<h2 class="anchored" data-anchor-id="从语音到-agent先分清候选世界与真实世界">从语音到 Agent：先分清候选世界与真实世界</h2>
+<p>今天常见的 Agent 仍带着强烈的自回归时间观。若历史为 <span class="math inline">\(h_t\)</span>，Agent 产生动作 <span class="math inline">\(a_t\sim\pi_\theta(\cdot\mid h_t)\)</span>，环境随后变为 <span class="math inline">\(s_{t+1}=T(s_t,a_t)\)</span>。一旦环境接受这个动作，它就进入了不可改写的历史。</p>
+<p><a href="https://arxiv.org/abs/2210.03629">ReAct</a> 让推理与行动交替，使模型能根据外部信息更新计划；<a href="https://arxiv.org/abs/2303.11366">Reflexion</a> 又让它把失败写成语言反馈，改善下一次尝试。这些工作都很重要，但外部动作若已经改变世界，后来的反思只能补救，不能把那段现实删除。</p>
+<p>Luna 对 Agent 真正有价值的启发，不是“把 LLM 换成 diffusion model”，而是把候选状态与现实状态明确分开。令 <span class="math inline">\(z^{(k)}\)</span> 表示第 <span class="math inline">\(k\)</span> 轮仍可编辑的方案，<span class="math inline">\(s_t\)</span> 表示已经发生的外部状态，系统执行 <span class="math inline">\(z^{(k+1)}=R_\theta(z^{(k)},s_t,c,V(z^{(k)}))\)</span>，在内部持续修订候选解。</p>
+<p>这里 <span class="math inline">\(c\)</span> 是目标与约束，<span class="math inline">\(V\)</span> 是测试、编译器、模拟器、视觉比较器或人工反馈，<span class="math inline">\(R_\theta\)</span> 则利用这些证据修订方案。只有显式调用 commit 算子时，候选方案才通过 <span class="math inline">\(s_{t+1}=C(s_t,z^{(k)})\)</span> 进入现实。</p>
+<p>这组对应关系并不神秘：语音网格相当于 Agent 的计划图、代码库或文档；MASK 是尚未解决的变量；denoise 是“生成—检查—修订”；confidence-based unmasking 是把已通过约束的部分暂时冻结；block-causal 则像事务边界，上一块已经提交，当前块仍能重写。</p>
+<p>真正的变化不发生在模型参数里，而发生在状态语义里。一个成熟系统至少应区分 <code>proposed → provisional → verified → committed</code>。否则所谓“反思”常常只是模型说了一遍自己后悔，却没有任何可回滚对象。</p>
+<p>代码 Agent 最容易看出这种差异。线性 Agent 可能改完一个文件就继续向前，把早期接口当成既定事实；可修订 Agent 会先在 branch 或 snapshot 中形成跨文件 patch，运行测试，依据失败同时重写若干模块，最后才 merge。Git、沙箱和测试框架已经提供了这种基础设施。</p>
+<p><a href="https://arxiv.org/abs/2405.15793">SWE-agent</a> 表明，Agent 与计算机之间的接口设计会显著改变其行为。沿着 Luna 的视角继续推进，下一步的接口不只要让模型“能调用什么命令”，还要告诉它“哪些状态可撤销、哪些证据足以提交”。</p>
+<p>这里需要把两个判断分开。第一，任务是否值得做迭代修订，要看变量是否存在强全局耦合、中间结果能否低成本修改，以及是否有评价或约束信号。复杂代码、长文、网页、CAD 和研究方案通常满足这些条件。第二，既然要修订，一次允许修改多大范围，则由延迟和不可逆性决定。离线生成整站可以像 Luna-TTS 那样保留大范围编辑权；发邮件、下单或控制机器人却必须像 Realtime 一样缩短区块，并在每次越过边界前增加确认与风险控制。</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../assets/articles/luna-tts-revisable-agent/figures/agent-commit-boundary.png" class="img-fluid figure-img"></p>
+<figcaption>木桥模型展示已提交、可编辑与未规划三种状态</figcaption>
+</figure>
+</div>
+<p><em>图 4｜提交边界。左侧已经胶合封固，中段仍由夹具保持可调，右侧尚是散件与草图。过去、当前与未来不必共享同一种状态。AI 生成图。</em></p>
+<p>这也让 Agent 与模型预测控制产生了自然联系。Agent 在时刻 <span class="math inline">\(t\)</span> 不只猜下一个动作，而是维护有限未来 <span class="math inline">\(A_t=(a_{t\mid t},\ldots,a_{t+H-1\mid t})\)</span>，根据当前状态重新优化整段候选计划，却只执行最前面的 <span class="math inline">\(b\)</span> 个动作；得到新反馈后，窗口前移并再次求解。</p>
+<p>这个“反复规划有限未来、只提交最前一小段”的结构，正是 receding-horizon control 的基本思想，可参见 <a href="https://ocw.mit.edu/courses/16-323-principles-of-optimal-control-spring-2008/resources/lec16/">MIT 的 Model Predictive Control 讲义</a>。Luna 提供的不是 MPC 本身，而是生成式解释：过去凝固，当前去噪，未来保持开放。</p>
+</section>
+<section id="新方向不是永远反悔而是学会怎样承诺" class="level2">
+<h2 class="anchored" data-anchor-id="新方向不是永远反悔而是学会怎样承诺">新方向不是永远反悔，而是学会怎样承诺</h2>
+<p>因此，editable horizon <span class="math inline">\(H\)</span> 与每次提交长度 <span class="math inline">\(b\)</span> 会成为 Agent 架构里的核心变量。可以把设计目标压缩为 <span class="math inline">\(J(H,b)=\mathbb E[L_{task}]+\lambda L_{first}+\mu C_{irrev}+\nu C_{compute}\)</span>：四项分别表示任务损失、首次响应延迟、错误提交的不可逆代价，以及反复搜索的计算成本。</p>
+<p>增大 <span class="math inline">\(H\)</span> 往往给全局协调更多空间，却增加延迟与算力；增大 <span class="math inline">\(b\)</span> 可以减少交互开销，却会让更多未经新反馈检验的动作一起进入现实。不存在对所有任务都最优的窗口。所谓 Agent 架构设计，很大一部分正是在不同场景下为这两个量定标。</p>
+<p>“允许修改”也不天然等于“越改越好”。语音扩散有明确的干净样本和训练目标，而开放世界 Agent 常常没有可靠的 <span class="math inline">\(V\)</span>：测试可能覆盖不足，模拟器可能偏离现实，LLM verifier 也可能与生成器共享盲点。若系统只会围绕错误评价函数反复优化，它得到的不是更深思熟虑的答案，而是更彻底的过拟合。另一个风险是永不提交：只要继续搜索总可能发现更好的方案，Agent 就会把谨慎变成拖延。因此超时、预算、最小改进阈值和人工确认不是工程杂项，而是承诺机制的一部分。</p>
+<p>这个边界也提醒我们，不应把 Luna-TTS 的成功直接当作 Agent 架构已经被验证。语音 token 位于固定网格，codec decoder 基本确定；Agent 面对的状态空间开放、动作类型异质，而且真实世界通常不存在逆函数 <span class="math inline">\(T^{-1}\)</span>。已发送的邮件只能再发澄清，已经发生的交易只能做补偿操作。我们真正能移植的是原则：在可逆空间里尽量联合修订，在不可逆边界前提高证据门槛，并让提交范围随风险和时延动态变化。</p>
+<p>沿着这条线看，Agent 的下一步未必首先是一个“更会思考”的基础模型，而可能是一套更成熟的时间制度：冻结目标与硬约束，让假设、计划和工作产物保持 provisional；用环境反馈持续消除不确定性；把通过验证的局部逐渐固化；只在必要时把结果提交到外部世界。这样的 Agent 不再只是沿历史续写下一步的叙述者，而更像一个持续运行的优化器，始终维护候选世界，并清楚知道哪一部分仍是草稿。</p>
+<p>Luna 最值得带出语音领域的认识，也正在这里。智能不只表现为能否迅速给出下一个 token、下一次调用或下一个动作；它还表现为能否区分“现在看起来对”与“已经必须算数”。真正可靠的 Agent 既不能永远往前冲，也不能永远留在草稿里。它需要一种有边界的反悔能力：在还能改的时候充分修改，在必须做的时候明确承诺。</p>
+<hr>
+<p><em>资料说明：Luna-TTS 的架构、训练规模、推理设置与指标均来自 2026 年 8 月 12 日公开的 v1 技术报告，本文写作时间为 2026 年 8 月 14 日。Agent 部分是基于该机制与既有 Agent、MPC 工作所作的架构推演，不是 Luna-TTS 作者在论文中提出或验证的结论。</em></p>
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">二次使用</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh">CC BY-NC-ND 4.0</a></div></div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "已复制");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "已复制");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/lidechi\.github\.io");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

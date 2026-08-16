@@ -10,7 +10,19 @@
 <atom:link href="https://lidechi.github.io/index.xml" rel="self" type="application/rss+xml"/>
 <description>数学、人工智能、Agent、强化学习与认知科学</description>
 <generator>quarto-1.10.18</generator>
-<lastBuildDate>Sat, 15 Aug 2026 00:00:00 GMT</lastBuildDate>
+<lastBuildDate>Sun, 16 Aug 2026 00:00:00 GMT</lastBuildDate>
+<item>
+  <title>Agent 不该只会往前走：从 Luna-TTS 看一种“可反悔”的智能</title>
+  <dc:creator>李德驰 </dc:creator>
+  <link>https://lidechi.github.io/posts/luna-tts-revisable-agent.html</link>
+  <description><![CDATA[ 从 Luna-TTS 的全句修订与分块提交出发，理解 Agent 为什么需要把候选世界与真实世界分开，并在可逆空间里充分修改、在不可逆边界前明确承诺。 ]]></description>
+  <category>Agent System</category>
+  <category>人工智能</category>
+  <category>语音生成</category>
+  <category>生成模型</category>
+  <guid>https://lidechi.github.io/posts/luna-tts-revisable-agent.html</guid>
+  <pubDate>Sun, 16 Aug 2026 00:00:00 GMT</pubDate>
+</item>
 <item>
   <title>文件原生心智：资源约束下如何长期重建</title>
   <dc:creator>李德驰 </dc:creator>
@@ -204,16 +216,6 @@
   <category>短文</category>
   <guid>https://lidechi.github.io/posts/frome-2026-07-13-21-23.html</guid>
   <pubDate>Mon, 13 Jul 2026 00:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>权限钥匙</title>
-  <dc:creator>李德驰 </dc:creator>
-  <link>https://lidechi.github.io/posts/frome-2026-07-12-10-02.html</link>
-  <description><![CDATA[ Agent 可以有意志，但必须有边界。 ]]></description>
-  <category>FroMe</category>
-  <category>短文</category>
-  <guid>https://lidechi.github.io/posts/frome-2026-07-12-10-02.html</guid>
-  <pubDate>Sun, 12 Jul 2026 00:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>
