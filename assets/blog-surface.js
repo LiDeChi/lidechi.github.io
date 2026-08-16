@@ -567,12 +567,18 @@
     return image;
   }
 
-  function topLevelMediaSource(image, root) {
-    let source = mediaSourceForImage(image);
-    while (source.parentElement && source.parentElement !== root) {
-      source = source.parentElement;
+  function mediaBlockForImage(image) {
+    const wrapper = image.closest(".quarto-figure");
+    if (wrapper) return wrapper;
+    return mediaSourceForImage(image);
+  }
+
+  function rootBlockForNode(node, root) {
+    let block = node;
+    while (block.parentElement && block.parentElement !== root) {
+      block = block.parentElement;
     }
-    return source.parentElement === root ? source : null;
+    return block.parentElement === root ? block : null;
   }
 
   function resetMediaFlow() {
@@ -589,22 +595,22 @@
 
   function setupMediaFlow(root) {
     resetMediaFlow();
-    const sources = [];
-    const seen = new Set();
+    const mediaByRootBlock = new Map();
     root.querySelectorAll("img").forEach((image) => {
-      if (image.closest(".callout, table, pre, .sourceCode")) return;
-      const source = topLevelMediaSource(image, root);
-      if (!source) return;
-      if (seen.has(source)) return;
-      seen.add(source);
-      sources.push(source);
+      if (image.closest(".article-translation, .callout, table, pre, .sourceCode")) {
+        return;
+      }
+      const source = mediaBlockForImage(image);
+      const rootBlock = rootBlockForNode(source, root);
+      if (!rootBlock || mediaByRootBlock.has(rootBlock)) return;
+      mediaByRootBlock.set(rootBlock, source);
     });
-    if (!sources.length) return;
+    if (!mediaByRootBlock.size) return;
 
-    const sourceSet = new Set(sources);
     let section = null;
     Array.from(root.children).forEach((node) => {
-      if (sourceSet.has(node)) {
+      const source = mediaByRootBlock.get(node);
+      if (source) {
         section = document.createElement("section");
         section.className = "blog-story-section";
         const media = document.createElement("aside");
@@ -614,7 +620,8 @@
         prose.className = "blog-story-prose";
         section.append(media, prose);
         root.append(section);
-        media.append(node);
+        media.append(source);
+        if (node !== source) prose.append(node);
         return;
       }
 
