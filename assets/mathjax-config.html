@@ -1,0 +1,25 @@
+<script>
+  // MathJax 4 otherwise treats ordinary formula clicks/focus as a request to
+  // enter its highlighted, keyboard-driven expression explorer.
+  window.MathJax = {
+    ...(window.MathJax || {}),
+    options: {
+      ...(window.MathJax?.options || {}),
+      enableExplorer: false,
+      enableExplorerHelp: false,
+      menuOptions: {
+        ...(window.MathJax?.options?.menuOptions || {}),
+        settings: {
+          ...(window.MathJax?.options?.menuOptions?.settings || {}),
+          speech: false,
+          braille: false,
+        },
+      },
+      a11y: {
+        ...(window.MathJax?.options?.a11y || {}),
+        speech: false,
+        braille: false,
+      },
+    },
+  };
+</script>

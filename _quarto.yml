@@ -59,6 +59,11 @@ format:
       - styles.scss
     css:
       - assets/site-bg.css
+    html-math-method:
+      method: mathjax
+      url: "https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js"
+    include-in-header:
+      - assets/mathjax-config.html
     toc: true
     number-sections: true
     code-fold: true

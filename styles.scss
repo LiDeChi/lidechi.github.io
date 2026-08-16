@@ -1,19 +1,19 @@
 /*-- scss:defaults --*/
 
-$body-bg: #f7f6f2;
+$body-bg: #fdfdfd;
 $body-color: #24211e;
 $link-color: #a84e30;
 $link-hover-color: #7d3824;
 $primary: #a84e30;
-$navbar-bg: rgba(247, 246, 242, 0.94);
+$navbar-bg: rgba(253, 253, 253, 0.94);
 $navbar-fg: #24211e;
 $navbar-hl: #a84e30;
-$border-color: #dedad1;
+$border-color: #e5e5e3;
 $font-family-sans-serif: "Gujarati Sangam MN", "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
 $headings-font-family: "YuMin_36pKn-Extrabold", "Yu Mincho", "Songti SC", "STSong", "SimSun", serif;
 $headings-font-weight: 800;
 $code-font-size: 0.88em;
-$code-bg: #efede7;
+$code-bg: #f7f7f6;
 $code-color: #5b2e21;
 $border-radius: 0;
 $font-size-root: 16px;
@@ -26,13 +26,13 @@ $font-size-root: 16px;
   --blog-col: min(48rem, calc(100vw - 3rem));
   --blog-browse-col: min(76rem, calc(100vw - 5rem));
   --blog-read-col: min(88rem, calc(100vw - 4rem));
-  --paper: #f7f6f2;
-  --paper-deep: #f0eee8;
+  --paper: #fdfdfd;
+  --paper-deep: #f7f7f6;
   --ink: #24211e;
   --ink-soft: #5d5851;
   --ink-faint: #8a837a;
-  --line: #dedad1;
-  --line-strong: #c9c3b9;
+  --line: #e5e5e3;
+  --line-strong: #d3d3d0;
   --accent: #a84e30;
   --accent-deep: #7d3824;
   --ui-font: "JetBrains Mono", "SFMono-Regular", "Menlo", "Consolas", monospace;
@@ -85,7 +85,7 @@ pre code { padding: 0; background: transparent; }
   min-height: 4.15rem;
   padding: 0;
   border-bottom: 1px solid var(--line);
-  background: rgba(247, 246, 242, 0.94);
+  background: rgba(253, 253, 253, 0.94);
   box-shadow: none;
   backdrop-filter: blur(14px);
 }
@@ -378,7 +378,7 @@ body.blog-is-immersive #quarto-content > .blog-surface-shell, body.blog-is-immer
   bottom: 0;
   width: min(9rem, 34%);
   height: 1.62em;
-  background: linear-gradient(90deg, rgba(247, 246, 242, 0), var(--paper) 88%);
+  background: linear-gradient(90deg, rgba(253, 253, 253, 0), var(--paper) 88%);
   content: "";
 }
 
@@ -459,7 +459,28 @@ body.blog-is-immersive #quarto-content > .blog-surface-shell, body.blog-is-immer
 .blog-immersive-body img, .blog-immersive-body figure, .blog-immersive-body table,
 .blog-immersive-body pre, .blog-immersive-body .math, .blog-immersive-body .katex-display { max-width: 100%; }
 .blog-immersive-body img { height: auto; border: 1px solid var(--line); background: #fff; }
-.blog-immersive-body pre, .blog-immersive-body table, .blog-immersive-body mjx-container { overflow-x: auto; }
+.blog-immersive-body pre, .blog-immersive-body table { overflow-x: auto; }
+
+// Display equations belong to the prose, not to a callout-like surface.  This
+// also overrides article-level styles that may accompany older published posts.
+.blog-immersive-body .math.display, main.content .math.display {
+  display: block;
+  margin: 1.35rem 0;
+  padding: 0;
+  overflow: visible !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+}
+
+// Keep genuinely wide equations horizontally reachable without reserving an
+// empty vertical scrollbar at their right edge.
+.blog-immersive-body .math.display mjx-container[display],
+main.content .math.display mjx-container[display] {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
 
 .blog-immersive-body pre {
   margin: 1.2rem 0;
@@ -688,7 +709,7 @@ body.blog-media-lightbox-open { overflow: hidden; }
   padding: 0.18rem;
   border: 1px solid rgba(36, 33, 30, 0.2);
   border-radius: 1rem;
-  background: rgba(247, 246, 242, 0.92);
+  background: rgba(253, 253, 253, 0.92);
   box-shadow: 0 10px 30px rgba(36, 33, 30, 0.1);
   backdrop-filter: blur(16px);
   transform: translateX(-50%);
