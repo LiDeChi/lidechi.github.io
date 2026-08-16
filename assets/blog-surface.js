@@ -174,15 +174,21 @@
       </figure>
     </div>
     <div class="blog-reading-dock" aria-label="博客阅读控制" hidden>
-      <button type="button" class="blog-dock-secondary" data-dock="catalog">返回预览</button>
-      <button type="button" class="blog-dock-nav" data-dock="prev" disabled>
-        <span class="blog-dock-label">上一篇</span>
-        <span class="blog-dock-text" data-dock="prev-text"></span>
-      </button>
-      <button type="button" class="blog-dock-nav blog-dock-primary" data-dock="next" disabled>
-        <span class="blog-dock-label">下一篇</span>
-        <span class="blog-dock-text" data-dock="next-text"></span>
-      </button>
+      <button type="button" class="blog-dock-secondary" data-dock="catalog">返回目录</button>
+      <div class="blog-dock-cluster" data-dock-cluster="prev">
+        <div class="blog-dock-menu" data-dock-menu="prev" aria-label="前面的文章"></div>
+        <button type="button" class="blog-dock-nav" data-dock="prev" disabled>
+          <span class="blog-dock-label">上一篇</span>
+          <span class="blog-dock-text" data-dock="prev-text"></span>
+        </button>
+      </div>
+      <div class="blog-dock-cluster" data-dock-cluster="next">
+        <div class="blog-dock-menu" data-dock-menu="next" aria-label="后面的文章"></div>
+        <button type="button" class="blog-dock-nav blog-dock-primary" data-dock="next" disabled>
+          <span class="blog-dock-label">下一篇</span>
+          <span class="blog-dock-text" data-dock="next-text"></span>
+        </button>
+      </div>
     </div>
   `;
 
@@ -211,6 +217,8 @@
   const dockNext = shell.querySelector('[data-dock="next"]');
   const dockPrevText = shell.querySelector('[data-dock="prev-text"]');
   const dockNextText = shell.querySelector('[data-dock="next-text"]');
+  const dockPrevMenu = shell.querySelector('[data-dock-menu="prev"]');
+  const dockNextMenu = shell.querySelector('[data-dock-menu="next"]');
 
   function renderPreviewHtml(item) {
     const source = item.fullText || item.description || "";
@@ -455,11 +463,30 @@
     return payload;
   }
 
+  function renderDockMenu(menu, nearbyItems, direction) {
+    menu.replaceChildren();
+    nearbyItems.forEach((item) => {
+      const entry = document.createElement("button");
+      entry.type = "button";
+      entry.className = "blog-dock-menu-item";
+      entry.dataset.dockIndex = String(items.indexOf(item));
+      entry.innerHTML = `
+        <span class="blog-dock-menu-label">${direction}</span>
+        <span class="blog-dock-menu-title">${escapeHtml(item.title)}</span>
+      `;
+      menu.append(entry);
+    });
+  }
+
   function updateDock() {
     const prev = items[state.activeIndex - 1] || null;
     const next = items[state.activeIndex + 1] || null;
+    const nearbyPrev = items
+      .slice(Math.max(0, state.activeIndex - 3), state.activeIndex)
+      .reverse();
+    const nearbyNext = items.slice(state.activeIndex + 1, state.activeIndex + 4);
 
-    dockCatalog.textContent = "返回预览";
+    dockCatalog.textContent = "返回目录";
 
     dockPrev.disabled = !prev;
     dockPrev.querySelector(".blog-dock-label").textContent = "上一篇";
@@ -468,6 +495,9 @@
     dockNext.disabled = !next;
     dockNext.querySelector(".blog-dock-label").textContent = "下一篇";
     dockNextText.textContent = next ? next.title : "已经到最后一篇";
+
+    renderDockMenu(dockPrevMenu, nearbyPrev, "上一篇");
+    renderDockMenu(dockNextMenu, nearbyNext, "下一篇");
   }
 
   function setMode(mode) {
@@ -494,35 +524,52 @@
     }
   }
 
-  function waitForMathEngine(timeoutMs = 8000) {
-    if (window.MathJax || window.katex || window.Quarto?.typesetMath) {
-      return Promise.resolve();
-    }
-    return new Promise((resolve) => {
-      const start = Date.now();
-      const tick = () => {
-        if (window.MathJax || window.katex || window.Quarto?.typesetMath) {
-          resolve();
-          return;
+  let mathEnginePromise;
+
+  function loadMathEngine() {
+    if (window.MathJax || window.katex) return Promise.resolve();
+    if (mathEnginePromise) return mathEnginePromise;
+
+    mathEnginePromise = new Promise((resolve, reject) => {
+      const existing = document.querySelector(
+        "script[data-blog-mathjax], script[src*='mathjax']",
+      );
+      const ready = async () => {
+        try {
+          await window.MathJax?.startup?.promise;
+          if (window.MathJax || window.katex) resolve();
+          else reject(new Error("math engine unavailable"));
+        } catch (error) {
+          reject(error);
         }
-        if (Date.now() - start > timeoutMs) {
-          resolve();
-          return;
-        }
-        window.setTimeout(tick, 50);
       };
-      tick();
+
+      if (existing) {
+        existing.addEventListener("load", ready, { once: true });
+        existing.addEventListener("error", () => reject(new Error("math engine failed to load")), { once: true });
+        return;
+      }
+
+      const script = document.createElement("script");
+      script.dataset.blogMathjax = "true";
+      script.src = "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js";
+      script.async = true;
+      script.addEventListener("load", ready, { once: true });
+      script.addEventListener("error", () => reject(new Error("math engine failed to load")), { once: true });
+      document.head.append(script);
+    }).catch((error) => {
+      mathEnginePromise = undefined;
+      throw error;
     });
+
+    return mathEnginePromise;
   }
 
   async function typesetMath(el) {
-    if (!el) return;
-    await waitForMathEngine();
+    if (!el || !el.querySelector(".math")) return;
 
     try {
-      if (window.Quarto && typeof window.Quarto.typesetMath === "function") {
-        window.Quarto.typesetMath(el);
-      }
+      await loadMathEngine();
 
       if (window.MathJax) {
         if (window.MathJax.startup?.promise) {
@@ -788,6 +835,17 @@
     if (state.mode !== "immersive") return;
     const next = state.activeIndex + 1;
     if (next < items.length) openImmersive(next);
+  });
+
+  [dockPrevMenu, dockNextMenu].forEach((menu) => {
+    menu.addEventListener("click", (event) => {
+      const entry = event.target.closest("[data-dock-index]");
+      if (!entry || !menu.contains(entry)) return;
+      const index = Number(entry.dataset.dockIndex);
+      if (Number.isInteger(index) && index >= 0 && index < items.length) {
+        openImmersive(index);
+      }
+    });
   });
 
   const observer = new IntersectionObserver(

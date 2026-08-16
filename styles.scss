@@ -671,6 +671,7 @@ body.blog-media-lightbox-open { overflow: hidden; }
   gap: 1px;
   padding: 0.18rem;
   border: 1px solid rgba(36, 33, 30, 0.2);
+  border-radius: 1rem;
   background: rgba(247, 246, 242, 0.92);
   box-shadow: 0 10px 30px rgba(36, 33, 30, 0.1);
   backdrop-filter: blur(16px);
@@ -687,7 +688,9 @@ body.blog-media-lightbox-open { overflow: hidden; }
 }
 
 .blog-dock-secondary:hover, .blog-dock-nav:hover:not(:disabled) { background: rgba(168, 78, 48, 0.07); color: var(--accent-deep); }
-.blog-dock-secondary { flex: 0 0 auto; padding: 0.45rem 0.6rem; font-size: 0.76rem; white-space: nowrap; }
+.blog-dock-secondary { flex: 0 0 auto; padding: 0.45rem 0.6rem; border-radius: 0.78rem; font-size: 0.76rem; white-space: nowrap; }
+
+.blog-dock-cluster { position: relative; display: flex; flex: 1 1 0; min-width: 0; }
 
 .blog-dock-nav {
   display: flex;
@@ -696,12 +699,71 @@ body.blog-media-lightbox-open { overflow: hidden; }
   gap: 0.5rem;
   padding: 0.45rem 0.58rem;
   align-items: center;
+  border-radius: 0.78rem;
   text-align: left;
 }
 
 .blog-dock-nav:disabled { opacity: 0.4; cursor: not-allowed; }
 .blog-dock-label { flex: 0 0 auto; color: var(--ink-faint); font-family: var(--ui-font); font-size: 0.58rem; letter-spacing: 0.04em; }
 .blog-dock-text { min-width: 0; overflow: hidden; font-size: 0.75rem; text-overflow: ellipsis; white-space: nowrap; }
+
+.blog-dock-menu {
+  position: absolute;
+  bottom: calc(100% + 0.58rem);
+  left: 0;
+  z-index: 1;
+  display: grid;
+  width: min(19rem, calc(100vw - 1.5rem));
+  gap: 0.14rem;
+  padding: 0.28rem;
+  border: 1px solid rgba(36, 33, 30, 0.2);
+  border-radius: 0.9rem;
+  background: rgba(247, 246, 242, 0.97);
+  box-shadow: 0 12px 30px rgba(36, 33, 30, 0.13);
+  backdrop-filter: blur(16px);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(0.35rem);
+  transition: opacity 150ms ease, transform 150ms ease, visibility 150ms ease;
+  visibility: hidden;
+}
+
+.blog-dock-cluster:last-child .blog-dock-menu { right: 0; left: auto; }
+.blog-dock-menu:empty { display: none; }
+
+.blog-dock-cluster:hover .blog-dock-menu,
+.blog-dock-cluster:focus-within .blog-dock-menu {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+  visibility: visible;
+}
+
+.blog-dock-menu-item {
+  display: grid;
+  gap: 0.12rem;
+  width: 100%;
+  padding: 0.48rem 0.55rem;
+  border: 0;
+  border-radius: 0.66rem;
+  background: transparent;
+  color: var(--ink-soft);
+  font-family: var(--body-font);
+  text-align: left;
+  cursor: pointer;
+}
+
+.blog-dock-menu-item:hover,
+.blog-dock-menu-item:focus-visible { background: rgba(168, 78, 48, 0.08); color: var(--accent-deep); }
+.blog-dock-menu-label { color: var(--ink-faint); font-family: var(--ui-font); font-size: 0.58rem; letter-spacing: 0.04em; }
+.blog-dock-menu-title {
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: 0.75rem;
+  line-height: 1.35;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
 
 // ---- Conventional Quarto article pages ---------------------------------
 
