@@ -593,6 +593,22 @@ body.blog-is-immersive #quarto-content > .blog-surface-shell, body.blog-is-immer
   }
 }
 
+@media (min-width: 1320px) and (hover: hover) and (pointer: fine) {
+  .blog-story-media img.blog-zoomable-image {
+    position: relative;
+    z-index: 0;
+    transition: transform 170ms ease, box-shadow 170ms ease;
+    will-change: transform;
+  }
+
+  .blog-story-media img.blog-zoomable-image:hover {
+    z-index: 2;
+    box-shadow: 0 12px 28px rgba(36, 33, 30, 0.18);
+    transform: scale(1.22);
+    transform-origin: right top;
+  }
+}
+
 // ---- Image reader --------------------------------------------------------
 
 .blog-media-lightbox[hidden] { display: none !important; }
