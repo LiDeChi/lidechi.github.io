@@ -164,6 +164,9 @@
           <div class="blog-toc-label">大纲</div>
           <nav class="blog-toc-nav"></nav>
         </div>
+        <aside class="blog-media-rail" aria-label="文中图片" hidden>
+          <div class="blog-media-stage"></div>
+        </aside>
       </div>
     </div>
     <div class="blog-reading-dock" aria-label="博客阅读控制" hidden>
@@ -195,6 +198,8 @@
   const immersiveBody = shell.querySelector(".blog-immersive-body");
   const toc = shell.querySelector(".blog-toc");
   const tocNav = shell.querySelector(".blog-toc-nav");
+  const mediaRail = shell.querySelector(".blog-media-rail");
+  const mediaStage = shell.querySelector(".blog-media-stage");
   const dockCatalog = shell.querySelector('[data-dock="catalog"]');
   const dockPrev = shell.querySelector('[data-dock="prev"]');
   const dockNext = shell.querySelector('[data-dock="next"]');
@@ -557,6 +562,121 @@
     }
   }
 
+  let disposeMediaRail = () => {};
+
+  function resetMediaRail() {
+    disposeMediaRail();
+    disposeMediaRail = () => {};
+    mediaRail.hidden = true;
+    mediaStage.replaceChildren();
+    immersiveBody
+      .querySelectorAll(".blog-inline-media-source")
+      .forEach((node) => node.classList.remove("blog-inline-media-source"));
+    immersiveBody
+      .querySelectorAll(".blog-media-trigger")
+      .forEach((node) => node.remove());
+  }
+
+  function mediaSourceForImage(image) {
+    const figure = image.closest("figure, .quarto-figure");
+    if (figure) return figure;
+    const parent = image.parentElement;
+    if (parent?.tagName === "P" && !cleanText(parent.textContent)) {
+      return parent;
+    }
+    return image;
+  }
+
+  function setupMediaRail(root) {
+    resetMediaRail();
+    const sources = [];
+    const seen = new Set();
+    root.querySelectorAll("img").forEach((image) => {
+      if (image.closest("table, pre, .sourceCode")) return;
+      const source = mediaSourceForImage(image);
+      if (seen.has(source)) return;
+      seen.add(source);
+      sources.push(source);
+    });
+    if (!sources.length) return;
+
+    const entries = sources.map((source, index) => {
+      const trigger = document.createElement("div");
+      trigger.className = "blog-media-trigger";
+      trigger.setAttribute("aria-hidden", "true");
+      source.before(trigger);
+      source.classList.add("blog-inline-media-source");
+
+      const slide = document.createElement("div");
+      slide.className = "blog-media-slide";
+      slide.dataset.mediaIndex = String(index);
+      const clone = source.cloneNode(true);
+      clone
+        .querySelectorAll?.("[id]")
+        .forEach((node) => node.removeAttribute("id"));
+      slide.append(clone);
+      mediaStage.append(slide);
+      return { trigger, slide };
+    });
+
+    let activeIndex = -1;
+    let scheduled = false;
+    const mediaQuery = window.matchMedia("(min-width: 1320px)");
+
+    const setActive = (index) => {
+      if (index === activeIndex) return;
+      activeIndex = index;
+      entries.forEach((entry, entryIndex) => {
+        entry.slide.classList.toggle("is-active", entryIndex === index);
+        entry.slide.classList.toggle("is-past", entryIndex < index);
+      });
+    };
+
+    const syncMedia = () => {
+      scheduled = false;
+      if (!mediaQuery.matches) return;
+      const switchLine =
+        (document.querySelector(".navbar")?.getBoundingClientRect().bottom || 0) +
+        48;
+      let nextIndex = 0;
+      entries.forEach((entry, index) => {
+        if (entry.trigger.getBoundingClientRect().top <= switchLine) {
+          nextIndex = index;
+        }
+      });
+      setActive(nextIndex);
+    };
+
+    const onScroll = () => {
+      if (scheduled) return;
+      scheduled = true;
+      window.requestAnimationFrame(syncMedia);
+    };
+    const updateRailVisibility = () => {
+      mediaRail.hidden = !mediaQuery.matches;
+      if (mediaQuery.matches) syncMedia();
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", updateRailVisibility);
+    mediaQuery.addEventListener?.("change", updateRailVisibility);
+    mediaQuery.addListener?.(updateRailVisibility);
+    updateRailVisibility();
+
+    disposeMediaRail = () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", updateRailVisibility);
+      mediaQuery.removeEventListener?.("change", updateRailVisibility);
+      mediaQuery.removeListener?.(updateRailVisibility);
+      sources.forEach((source) =>
+        source.classList.remove("blog-inline-media-source"),
+      );
+      entries.forEach(({ trigger }) => trigger.remove());
+      mediaRail.hidden = true;
+      mediaStage.replaceChildren();
+    };
+  }
+
   function scrollToArticleStart() {
     const navHeight = document.querySelector(".navbar")?.getBoundingClientRect()
       .height || 0;
@@ -569,6 +689,7 @@
     if (!item) return;
     state.activeIndex = index;
     setMode("immersive");
+    resetMediaRail();
     immersiveBody.innerHTML = `<p class="blog-immersive-loading">…</p>`;
     immersiveTitle.textContent = item.title;
     toc.hidden = true;
@@ -581,6 +702,7 @@
       buildToc(immersiveBody);
       await typesetMath(immersiveBody);
       buildToc(immersiveBody);
+      setupMediaRail(immersiveBody);
       if (item.href) {
         const url = new URL(window.location.href);
         url.hash = `article-${index}`;
@@ -594,6 +716,7 @@
   }
 
   function backToPreview() {
+    resetMediaRail();
     setMode("preview");
     const url = new URL(window.location.href);
     url.hash = "";
