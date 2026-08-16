@@ -25,7 +25,7 @@ $font-size-root: 16px;
 :root {
   --blog-col: min(48rem, calc(100vw - 3rem));
   --blog-browse-col: min(76rem, calc(100vw - 5rem));
-  --blog-read-col: min(76rem, calc(100vw - 5rem));
+  --blog-read-col: min(88rem, calc(100vw - 4rem));
   --paper: #f7f6f2;
   --paper-deep: #f0eee8;
   --ink: #24211e;
@@ -417,7 +417,7 @@ body.blog-is-immersive #quarto-content > .blog-surface-shell, body.blog-is-immer
   line-height: 1.78;
 }
 
-.blog-immersive-body p, .blog-immersive-body li { max-width: 40rem; margin-bottom: 1rem; }
+.blog-immersive-body p, .blog-immersive-body li { max-width: none; margin-bottom: 1rem; }
 
 .blog-immersive-body h2, .blog-immersive-body h3, .blog-immersive-body h4 {
   max-width: none;
@@ -458,7 +458,8 @@ body.blog-is-immersive #quarto-content > .blog-surface-shell, body.blog-is-immer
   font-size: 0.82em;
 }
 
-.blog-media-rail { display: none; }
+.blog-story-section { display: contents; }
+.blog-story-media { display: block; }
 
 .blog-immersive-loading, .blog-immersive-error { color: var(--ink-faint); font-family: var(--ui-font); font-size: 0.8rem; }
 
@@ -504,7 +505,7 @@ body.blog-is-immersive #quarto-content > .blog-surface-shell, body.blog-is-immer
 // On a wide screen, reserve a matching left rail so the prose itself stays centered.
 @media (min-width: 1320px) {
   .blog-immersive-layout {
-    grid-template-columns: 10rem minmax(0, 42rem) minmax(18rem, 20rem);
+    grid-template-columns: 10rem minmax(0, 48rem) 10rem;
     column-gap: 1.5rem;
     row-gap: 0;
   }
@@ -528,47 +529,38 @@ body.blog-is-immersive #quarto-content > .blog-surface-shell, body.blog-is-immer
     border-left: 0;
   }
 
-  .blog-immersive-body .blog-inline-media-source { display: none; }
-  .blog-media-trigger { display: block; height: 0; margin: 0; }
+}
 
-  .blog-media-rail:not([hidden]) {
+@media (min-width: 1400px) {
+  .blog-immersive-layout {
+    grid-template-columns: 10rem minmax(0, 48rem) minmax(14rem, 18rem);
+  }
+
+  .blog-story-section {
+    display: grid;
+    grid-template-columns: minmax(0, 48rem) minmax(14rem, 18rem);
+    column-gap: 1.5rem;
+    width: calc(48rem + 1.5rem + 18rem);
+    align-items: start;
+  }
+
+  .blog-story-prose {
+    grid-column: 1;
+    grid-row: 1;
+    min-width: 0;
+  }
+
+  .blog-story-media {
     position: sticky;
     top: 5.45rem;
-    display: block;
-    grid-column: 3;
+    grid-column: 2;
     grid-row: 1;
     align-self: start;
     min-width: 0;
-    width: 100%;
   }
 
-  .blog-media-stage {
-    display: grid;
-    min-width: 0;
-    overflow: hidden;
-  }
-
-  .blog-media-slide {
-    z-index: 1;
-    display: grid;
-    grid-area: 1 / 1;
-    min-width: 0;
-    opacity: 0;
-    pointer-events: none;
-    transform: translateY(2.5rem);
-    transition: opacity 360ms ease, transform 460ms cubic-bezier(0.22, 0.8, 0.24, 1);
-  }
-
-  .blog-media-slide.is-active {
-    z-index: 2;
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  .blog-media-slide.is-past { transform: translateY(-2.5rem); }
-
-  .blog-media-slide > figure, .blog-media-slide > p { margin: 0; }
-  .blog-media-slide img {
+  .blog-story-media > figure, .blog-story-media > p { margin: 0; }
+  .blog-story-media img {
     display: block;
     width: 100%;
     max-height: calc(100dvh - 8.2rem);
@@ -577,7 +569,7 @@ body.blog-is-immersive #quarto-content > .blog-surface-shell, body.blog-is-immer
     border: 1px solid var(--line);
     background: #fff;
   }
-  .blog-media-slide figcaption {
+  .blog-story-media figcaption {
     margin: 0.65rem 0 0;
     color: var(--ink-soft);
     font-family: var(--body-font);
