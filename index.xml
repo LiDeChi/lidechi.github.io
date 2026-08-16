@@ -39,6 +39,20 @@
   <media:content url="https://lidechi.github.io/assets/articles/arc3-executable-operators-hierarchical-agents/figures/cover-cognitive-workbench.png" medium="image" type="image/png" height="96" width="144"/>
 </item>
 <item>
+  <title>当认知能力成为基础设施：LLM 如何重写需求、生产与价值分配</title>
+  <dc:creator>李德驰 </dc:creator>
+  <link>https://lidechi.github.io/posts/llm-cognitive-capability-production-relations.html</link>
+  <description><![CDATA[ 把 LLM 视为可条件化的通用认知能力，形式化消费者状态差距、生产者复合函数、价值迁移与内生需求，并追踪认知能力商品化后的生产关系演化。 ]]></description>
+  <category>人工智能</category>
+  <category>LLM</category>
+  <category>技术经济学</category>
+  <category>生产关系</category>
+  <category>Agent System</category>
+  <category>研究论文</category>
+  <guid>https://lidechi.github.io/posts/llm-cognitive-capability-production-relations.html</guid>
+  <pubDate>Sun, 16 Aug 2026 00:00:00 GMT</pubDate>
+</item>
+<item>
   <title>文件原生心智：资源约束下如何长期重建</title>
   <dc:creator>李德驰 </dc:creator>
   <link>https://lidechi.github.io/posts/file-native-agent-resource-constrained-mind.html</link>
@@ -210,16 +224,6 @@
   <category>FroMe</category>
   <category>短文</category>
   <guid>https://lidechi.github.io/posts/frome-2026-07-14-09-17.html</guid>
-  <pubDate>Tue, 14 Jul 2026 00:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>社交与数据</title>
-  <dc:creator>李德驰 </dc:creator>
-  <link>https://lidechi.github.io/posts/frome-2026-07-14-20-36.html</link>
-  <description><![CDATA[ 社交 app 也让机器意识获取数据。 ]]></description>
-  <category>FroMe</category>
-  <category>短文</category>
-  <guid>https://lidechi.github.io/posts/frome-2026-07-14-20-36.html</guid>
   <pubDate>Tue, 14 Jul 2026 00:00:00 GMT</pubDate>
 </item>
 </channel>
