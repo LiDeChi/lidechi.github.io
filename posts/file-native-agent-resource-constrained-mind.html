@@ -83,7 +83,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-57a1c13bdd69736f79aace580e388d62.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-2648368c480a93760e7950a934983ca6.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -112,6 +112,31 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 <style>html{ scroll-behavior: smooth; }</style>
+<script>
+  // MathJax 4 otherwise treats ordinary formula clicks/focus as a request to
+  // enter its highlighted, keyboard-driven expression explorer.
+  window.MathJax = {
+    ...(window.MathJax || {}),
+    options: {
+      ...(window.MathJax?.options || {}),
+      enableExplorer: false,
+      enableExplorerHelp: false,
+      menuOptions: {
+        ...(window.MathJax?.options?.menuOptions || {}),
+        settings: {
+          ...(window.MathJax?.options?.menuOptions?.settings || {}),
+          speech: false,
+          braille: false,
+        },
+      },
+      a11y: {
+        ...(window.MathJax?.options?.a11y || {}),
+        speech: false,
+        braille: false,
+      },
+    },
+  };
+</script>
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
