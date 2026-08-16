@@ -24,6 +24,21 @@
   <pubDate>Sun, 16 Aug 2026 00:00:00 GMT</pubDate>
 </item>
 <item>
+  <title>从一帧变化到一段可靠行动：ARC-3 与可生长的层级智能</title>
+  <dc:creator>李德驰 </dc:creator>
+  <link>https://lidechi.github.io/posts/arc3-executable-operators-hierarchical-agents.html</link>
+  <description><![CDATA[ 从帧变化、对象假设与可执行 operator 出发，推导模式如何组合、扩展并晋升为带契约、监控、回退和可靠控制 horizon 的层级代理。 ]]></description>
+  <category>Agent System</category>
+  <category>人工智能</category>
+  <category>强化学习</category>
+  <category>认知架构</category>
+  <category>ARC-AGI</category>
+  <category>研究论文</category>
+  <guid>https://lidechi.github.io/posts/arc3-executable-operators-hierarchical-agents.html</guid>
+  <pubDate>Sun, 16 Aug 2026 00:00:00 GMT</pubDate>
+  <media:content url="https://lidechi.github.io/assets/articles/arc3-executable-operators-hierarchical-agents/figures/cover-cognitive-workbench.png" medium="image" type="image/png" height="96" width="144"/>
+</item>
+<item>
   <title>文件原生心智：资源约束下如何长期重建</title>
   <dc:creator>李德驰 </dc:creator>
   <link>https://lidechi.github.io/posts/file-native-agent-resource-constrained-mind.html</link>
@@ -206,16 +221,6 @@
   <category>短文</category>
   <guid>https://lidechi.github.io/posts/frome-2026-07-14-20-36.html</guid>
   <pubDate>Tue, 14 Jul 2026 00:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>弱代理预算</title>
-  <dc:creator>李德驰 </dc:creator>
-  <link>https://lidechi.github.io/posts/frome-2026-07-13-21-23.html</link>
-  <description><![CDATA[ 没有预算的子代理，下次怎么办？ ]]></description>
-  <category>FroMe</category>
-  <category>短文</category>
-  <guid>https://lidechi.github.io/posts/frome-2026-07-13-21-23.html</guid>
-  <pubDate>Mon, 13 Jul 2026 00:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>
