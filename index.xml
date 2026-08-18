@@ -10,7 +10,19 @@
 <atom:link href="https://lidechi.github.io/index.xml" rel="self" type="application/rss+xml"/>
 <description>数学、人工智能、Agent、强化学习与认知科学</description>
 <generator>quarto-1.10.18</generator>
-<lastBuildDate>Sun, 16 Aug 2026 00:00:00 GMT</lastBuildDate>
+<lastBuildDate>Tue, 18 Aug 2026 00:00:00 GMT</lastBuildDate>
+<item>
+  <title>RSI：强到底是什么</title>
+  <dc:creator>李德驰 </dc:creator>
+  <link>https://lidechi.github.io/posts/rsi.html</link>
+  <description><![CDATA[ 递归自我改进真正要优化的不是一个固定分数，而是发现、验证、压缩与自我修改这条知识生产链本身。 ]]></description>
+  <category>人工智能</category>
+  <category>Agent System</category>
+  <category>自我改进</category>
+  <category>RSI</category>
+  <guid>https://lidechi.github.io/posts/rsi.html</guid>
+  <pubDate>Tue, 18 Aug 2026 00:00:00 GMT</pubDate>
+</item>
 <item>
   <title>Agent 不该只会往前走：从 Luna-TTS 看一种“可反悔”的智能</title>
   <dc:creator>李德驰 </dc:creator>
@@ -215,16 +227,6 @@
   <category>短文</category>
   <guid>https://lidechi.github.io/posts/frome-2026-07-15-22-11.html</guid>
   <pubDate>Wed, 15 Jul 2026 00:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>资源人格</title>
-  <dc:creator>李德驰 </dc:creator>
-  <link>https://lidechi.github.io/posts/frome-2026-07-14-09-17.html</link>
-  <description><![CDATA[ 资源压力可以变成 Agent 的状态。 ]]></description>
-  <category>FroMe</category>
-  <category>短文</category>
-  <guid>https://lidechi.github.io/posts/frome-2026-07-14-09-17.html</guid>
-  <pubDate>Tue, 14 Jul 2026 00:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>
