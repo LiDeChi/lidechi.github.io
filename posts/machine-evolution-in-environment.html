@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-Hans" xml:lang="zh-Hans"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="李德驰">
+<meta name="description" content="真正稀缺的不是会改自己的机器，而是一套能不断产生新问题、又始终与真实世界保持联系的环境生成过程。">
+
+<title>机器的进化在环境 – 李德驰的研究笔记</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../assets/favicon.svg" rel="icon" type="image/svg+xml">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-3580155e636549a17b13d7142e36c672.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "没有结果",
+    "search-matching-documents-text": "匹配的文档",
+    "search-copy-link-title": "复制搜索链接",
+    "search-hide-matches-text": "隐藏其它匹配结果",
+    "search-more-match-text": "更多匹配结果",
+    "search-more-matches-text": "更多匹配结果",
+    "search-clear-button-title": "清除",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "取消",
+    "search-submit-button-title": "提交",
+    "search-label": "搜索"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+<script>
+  // MathJax 4 otherwise treats ordinary formula clicks/focus as a request to
+  // enter its highlighted, keyboard-driven expression explorer.
+  window.MathJax = {
+    ...(window.MathJax || {}),
+    options: {
+      ...(window.MathJax?.options || {}),
+      enableExplorer: false,
+      enableExplorerHelp: false,
+      menuOptions: {
+        ...(window.MathJax?.options?.menuOptions || {}),
+        settings: {
+          ...(window.MathJax?.options?.menuOptions?.settings || {}),
+          speech: false,
+          braille: false,
+        },
+      },
+      a11y: {
+        ...(window.MathJax?.options?.a11y || {}),
+        speech: false,
+        braille: false,
+      },
+    },
+  };
+</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../assets/site-bg.css">
+<meta property="og:title" content="机器的进化在环境 – 李德驰的研究笔记">
+<meta property="og:description" content="真正稀缺的不是会改自己的机器，而是一套能不断产生新问题、又始终与真实世界保持联系的环境生成过程。">
+<meta property="og:site_name" content="李德驰的研究笔记">
+<meta name="twitter:title" content="机器的进化在环境 – 李德驰的研究笔记">
+<meta name="twitter:description" content="真正稀缺的不是会改自己的机器，而是一套能不断产生新问题、又始终与真实世界保持联系的环境生成过程。">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">李德驰的研究笔记</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="搜索"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="展开或折叠导航栏" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">文章</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://wordm.us/"> <i class="bi bi-house" role="img" aria-label="主页 wordm.us">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://x.com/parsonjian"> <i class="bi bi-twitter-x" role="img" aria-label="X">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://substack.com/@parson1"> <i class="bi bi-newspaper" role="img" aria-label="Substack">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://t.me/fount_ai"> <i class="bi bi-telegram" role="img" aria-label="Telegram">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://discord.gg/2p7fJpXequ"> <i class="bi bi-discord" role="img" aria-label="Discord">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.reddit.com/r/Fount/"> <i class="bi bi-reddit" role="img" aria-label="Reddit">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="../index.xml"> <i class="bi bi-rss" role="img" aria-label="RSS">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">机器的进化在环境</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">人工智能</div>
+    <div class="quarto-category">Agent System</div>
+    <div class="quarto-category">自我改进</div>
+    <div class="quarto-category">RSI</div>
+    <div class="quarto-category">持续学习</div>
+  </div>
+  </div>
+
+<div>
+  <div class="description">
+    真正稀缺的不是会改自己的机器，而是一套能不断产生新问题、又始终与真实世界保持联系的环境生成过程。
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">作者</div>
+    <div class="quarto-title-meta-contents">
+             <p>李德驰 </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">发布于</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">2026年8月19日</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- wordm:lang zh -->
+<p>我们想要机器的通用性到底是什么？让它在一个陌生环境能按照我们的指标去行动，比如维持自身存活超过一定时限。所以，这首先基于人类对环境的认知，什么是环境，环境有什么指标。所以我们怎么理解持续学习乃至递归自我进化RSI？是我们对环境有一套比较完善的评价机制和一套简单的生成机制，结合起来，让AI进去我们生成的环境，我们评估AI的行为。</p>
+<p>假设系统的全部代码 <span class="math inline">\(\mathcal{A}=(X,\Pi,I)\)</span>。其中 <span class="math inline">\(X\)</span> 是系统积累的状态，包括 memory、knowledge、skills；<span class="math inline">\(\Pi\)</span> 是完成任务的机制，包括模型、planner、程序、工具策略；<span class="math inline">\(I\)</span> 是负责改变系统的改进机制。于是：</p>
+<ol type="1">
+<li>持续学习是 <span class="math inline">\(X_t\rightarrow X_{t+1}\)</span>，而 <span class="math inline">\(\Pi,I\)</span> 基本固定；</li>
+<li>自我改进是 <span class="math inline">\(\Pi_t\rightarrow\Pi_{t+1}\)</span>，但产生这种变化的 <span class="math inline">\(I\)</span> 仍固定；</li>
+<li>RSI 是 <span class="math inline">\(I_t\rightarrow I_{t+1}\)</span>，于是<strong>产生下一次改进的机制本身也进入了被改进对象</strong>。</li>
+</ol>
+<p>我们希望在固定的环境集 <span class="math inline">\(\mathcal{T}=\{\tau_1,\ldots,\tau_n\}\)</span> 里，系统在固定的指标下表现越来越好，只是方式不同。或者有实验室不断添加一些benchmark，缓慢增加环境集的容量。评价机制 <span class="math inline">\(J(\mathcal{A}_{t+1},\mathcal{T}_{t+1})&gt;J(\mathcal{A}_{t},\mathcal{T}_{t})\)</span>，其中 <span class="math inline">\(\mathcal{T}_{t+1} \approx \mathcal{T}_{t}\)</span>，环境集的进化速度极慢。</p>
+<p>我们的评价函数从何而来？从我们的环境中来。我们人类集体开拓的环境，包括星辰大海，个人日常的环境，柴米油盐。</p>
+<p>如果考虑环境的本质，那么一切代码都是环境的一部分，或者就是它面对的环境本身。环境的本质是什么？先按照人的思维，我们对环境的第一直觉是，身体之外是环境。我们改造环境就是保持自身不变去改造环境。事实上身体也是环境的一部分，加点鸡汤来说，我们对环境的了解会提升我们对自己的认知，对自我的控制力。比如，现在的LLM Agent，本身就是电脑环境里的一个个文件组合，工具是，主循环也是。</p>
+<p>所以，如果把“环境”继续往下推，它其实不是一个固定的外部世界，而是<strong>相对于某个主体当前能够干预什么、感知什么而言的边界</strong>。对于一个普通程序，操作系统、文件、网络和用户输入是环境；对于一个能够修改自身代码的 Agent，原来的程序代码也逐渐从“自己”变成了可以观察和操作的环境。于是持续学习、自我改进、RSI 的区别，也可以重新理解成：机器能够纳入自己行动空间的范围越来越大。持续学习主要在 <span class="math inline">\(X\)</span> 上行动，自我改进进一步把 <span class="math inline">\(\Pi\)</span> 变成可操作对象，而 RSI 最终把 <span class="math inline">\(I\)</span> 本身也暴露在环境里。所谓“递归”，并不是某种神秘的智能爆炸，而只是<strong>系统不断把原来负责行动的机制，也变成下一层可以观察、实验和修改的对象</strong>。</p>
+<p>但这里立刻会出现一个更麻烦的问题。代码可以让机器自己改，实验可以让机器自己跑，但最后是谁告诉它“这次修改更好”？只要 <span class="math inline">\(J\)</span> 仍然依赖人类逐项检查，RSI 的速度最终就不会由机器写代码的速度决定，而会被<strong>人类验证速度</strong>锁死。一个 Agent 一分钟可以产生一百个版本，但人类一天只能认真判断十个，那么真正的改进速度仍然只有每天十次。于是构造 RSI 系统时，最稀缺的资源可能根本不是生成能力，而是可靠、便宜、可扩展的评价。</p>
+<p>这也是为什么 benchmark 如此重要。benchmark 的本质不是“出几道题”，而是人类提前花费大量认知劳动，把某一部分真实世界压缩成一个可以自动判断的环境。比如编程任务把“软件是否正确”压缩成编译、单元测试、性能指标；游戏把大量复杂行为压缩成生存时间、得分、资源、胜负；ARC 则试图把抽象推理能力压缩到一组可交互的小世界里。只要环境能够自动运行，<span class="math inline">\(J\)</span> 能够自动计算，机器就获得了一个廉价的进化场。</p>
+<p>问题在于，我们不可能靠人类永远手工生产这些环境。假设系统改进速度越来越快，而人类设计 benchmark 的速度近似固定，那么迟早会出现 <span class="math inline">\(\text{rate}(\mathcal A)\gg\text{rate}(\mathcal T)\)</span>。机器开始对有限的 <span class="math inline">\(\mathcal T\)</span> 过拟合：它越来越擅长我们已经想到的问题，却不一定越来越适应我们真正生活的世界。因此一个真正可持续的自我进化系统，环境本身也必须进入生成过程。我们不再只考虑 <span class="math inline">\(\mathcal A_t\rightarrow\mathcal A_{t+1}\)</span>，而需要同时存在 <span class="math inline">\(\mathcal T_t\rightarrow\mathcal T_{t+1}\)</span>：一部分机器负责解决环境，一部分机器负责制造新的环境、修改规则、寻找当前系统的脆弱点。</p>
+<p>但这又不能简单变成“AI 随机生成无限 benchmark”。随机世界很便宜，却可能毫无意义。真正困难的是让生成出来的 <span class="math inline">\(\tau\)</span> 位于一个特殊区域：它既不能和已有任务完全一样，否则没有新的学习价值；也不能距离人类世界太远，否则即使机器在那里获得了极高能力，我们也不知道这种能力有什么用。可以粗略地把环境价值写成 <span class="math inline">\(V(\tau)=N(\tau,\mathcal A_t)\cdot H(\tau,\mathcal H)-\lambda C_{\text{verify}}(\tau)\)</span>，其中 <span class="math inline">\(N\)</span> 表示它对当前机器而言有多新、多有挑战，<span class="math inline">\(H\)</span> 表示它与人类真实环境分布 <span class="math inline">\(\mathcal H\)</span> 有多接近，而 <span class="math inline">\(C_{\text{verify}}\)</span> 则是人类确认这个环境及其评价机制是否合理的成本。理想的新环境，不是最难的环境，而是<strong>最能暴露机器未知能力、同时又最容易被人类理解和验证的环境</strong>。</p>
+<p>这时“趋近人类环境”就不只是为了让 AI 学得更像人，而是为了降低验证成本。一个完全陌生的数学宇宙，即使 AI 告诉我们它已经在那里进化了一万代，我们几乎无法判断发生了什么；但如果它生成的是一个城市、公司、游戏、市场、软件工程项目或者一群虚拟人的生活，我们已经拥有大量先验知识。我们知道一个角色长期不睡觉是不合理的，知道公司无限举债不可持续，知道一个程序偶尔成功但大量崩溃不是好的策略。<strong>环境越接近人类已经理解的世界，人类已有的常识、制度、科学和经验就越能够直接充当评价器。</strong></p>
+<p>于是环境生成最好还是去中心化的。因为“什么环境有价值”本身没有一个中央答案。程序员关心代码世界，医生关心人体，玩家关心游戏，企业关心组织和市场，普通人关心家庭、工作、消费、健康。每个人实际上都拥有一个局部的环境分布 <span class="math inline">\(\mathcal H_i\)</span>，以及一套并不完整但非常便宜的评价函数 <span class="math inline">\(J_i\)</span>。如果把这些环境和评价能力接入同一个系统，就不需要一个实验室提前定义“通用智能究竟应该会什么”。机器可以不断进入不同人提供的世界：解决问题、暴露错误、生成新的情景，而人只需要评价自己本来就熟悉的那一小部分。</p>
+<p>因此，未来的 benchmark 可能不再是一张静态排行榜，而更像一个不断生长的生态系统。人类提供真实需求和少量判断，机器根据这些种子自动生成大量变体，例如改变资源、角色、规则、时间跨度和隐藏变量；另一批机器寻找其中能够区分不同 Agent 能力的环境；只有少数高价值案例重新提交给人类验证。这样，人类不再负责枚举整个 <span class="math inline">\(\mathcal T\)</span>，而只是不断校准环境生成器的方向。人的认知成本从“逐个设计和评分”转变成“检查机器生成的评价体系有没有偏离现实”。</p>
+<p>甚至可以进一步把这个过程理解成人类社会本来就在做的事情。市场、公司、游戏、学校、法律、科研，本质上都在不停制造新的局部环境，同时生成新的评价规则。考试评价学生，公司评价员工，市场评价产品，同行评议评价论文，游戏规则评价玩家。它们当然都不完美，但共同组成了一个巨大的、去中心化的评价网络。今天的 AI benchmark 反而显得很特殊：我们把机器关在少数静态试卷里，然后期待从中推断它是否具有“通用性”。</p>
+<p>如果机器真正进入这些动态环境，那么“通用性”的定义也可能因此改变。通用智能不一定意味着在某个固定任务集合 <span class="math inline">\(\mathcal T\)</span> 上取得极高平均分，而更接近这样一种能力：面对从未见过、但来自人类世界同一生成过程的新环境 <span class="math inline">\(\tau\sim\mathcal H\)</span>，系统能够迅速发现其中什么可以感知、什么可以控制、什么值得优化，并调整自己的 <span class="math inline">\(X\)</span>、<span class="math inline">\(\Pi\)</span>，甚至最终调整 <span class="math inline">\(I\)</span>，在有限资源内持续提高长期表现。</p>
+<p>这时，持续学习和 RSI 就不再只是机器内部的技术问题，而变成一个<strong>主体与环境共同扩张的问题</strong>。机器扩大自己能够修改的范围，人类扩大机器能够进入的环境范围；机器生成新的环境来寻找自己的盲点，人类只对这些环境与现实之间的联系进行低成本校准。最终真正稀缺的东西不是“更多代码”或者“更多 benchmark”，而是一条能够不断产生新问题、又始终与真实世界保持联系的环境生成过程。</p>
+<p>也许我们真正应该构建的不是一个会自我修改的 AI，而是一套可以让智能不断接受现实检验的人工生态。RSI 只是其中的一个结果：当环境足够丰富、评价足够便宜、实验足够自动化之后，机器自然会开始发现，除了改变自己的记忆和策略之外，<strong>改变“自己如何改变自己”本身，也是环境里一个值得探索的动作。</strong></p>
+
+
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">二次使用</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh">CC BY-NC-ND 4.0</a></div></div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "已复制");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "已复制");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/lidechi\.github\.io");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

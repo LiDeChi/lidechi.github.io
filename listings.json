@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/machine-evolution-in-environment.html",
       "/posts/rsi.html",
       "/posts/luna-tts-revisable-agent.html",
       "/posts/arc3-executable-operators-hierarchical-agents.html",

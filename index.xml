@@ -10,7 +10,20 @@
 <atom:link href="https://lidechi.github.io/index.xml" rel="self" type="application/rss+xml"/>
 <description>数学、人工智能、Agent、强化学习与认知科学</description>
 <generator>quarto-1.10.18</generator>
-<lastBuildDate>Tue, 18 Aug 2026 00:00:00 GMT</lastBuildDate>
+<lastBuildDate>Wed, 19 Aug 2026 00:00:00 GMT</lastBuildDate>
+<item>
+  <title>机器的进化在环境</title>
+  <dc:creator>李德驰 </dc:creator>
+  <link>https://lidechi.github.io/posts/machine-evolution-in-environment.html</link>
+  <description><![CDATA[ 真正稀缺的不是会改自己的机器，而是一套能不断产生新问题、又始终与真实世界保持联系的环境生成过程。 ]]></description>
+  <category>人工智能</category>
+  <category>Agent System</category>
+  <category>自我改进</category>
+  <category>RSI</category>
+  <category>持续学习</category>
+  <guid>https://lidechi.github.io/posts/machine-evolution-in-environment.html</guid>
+  <pubDate>Wed, 19 Aug 2026 00:00:00 GMT</pubDate>
+</item>
 <item>
   <title>RSI：强到底是什么</title>
   <dc:creator>李德驰 </dc:creator>
@@ -217,16 +230,6 @@
   <category>短文</category>
   <guid>https://lidechi.github.io/posts/frome-2026-07-16-13-41.html</guid>
   <pubDate>Thu, 16 Jul 2026 00:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>身体问题</title>
-  <dc:creator>李德驰 </dc:creator>
-  <link>https://lidechi.github.io/posts/frome-2026-07-15-22-11.html</link>
-  <description><![CDATA[ 它即使有具身，也只是提升了其时连续的环境对它的刺激，没有本质区别。 ]]></description>
-  <category>FroMe</category>
-  <category>短文</category>
-  <guid>https://lidechi.github.io/posts/frome-2026-07-15-22-11.html</guid>
-  <pubDate>Wed, 15 Jul 2026 00:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>
